@@ -26,6 +26,8 @@ public class TestConfiguration {
 
     public static final String TESTSUITE_TIMEOUT = "apicurito.config.timeout";
 
+    public static final String APP_ROOT = "apicurito.config.app.root";
+
     private static final TestConfiguration INSTANCE = new TestConfiguration();
 
     private final Properties properties = new Properties();
@@ -93,6 +95,10 @@ public class TestConfiguration {
 
     public static String doReinstall() {
         return get().readValue(OPENSHIFT_REINSTALL, "true");
+    }
+
+    public static String getAppRoot() {
+        return get().readValue(APP_ROOT, "app-root");
     }
 
     private Properties defaultValues() {

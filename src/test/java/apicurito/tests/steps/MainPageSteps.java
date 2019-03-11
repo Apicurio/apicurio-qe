@@ -4,9 +4,10 @@ import apicurito.tests.utils.slenide.CommonUtils;
 import apicurito.tests.utils.slenide.ImportExportUtils;
 import apicurito.tests.utils.slenide.MainPageUtils;
 import com.codeborne.selenide.SelenideElement;
-import cucumber.api.DataTable;
 import cucumber.api.java.en.And;
 import cucumber.api.java.en.Then;
+import cucumber.api.java.en.When;
+import io.cucumber.datatable.DataTable;
 import lombok.extern.slf4j.Slf4j;
 import org.assertj.core.api.Condition;
 import org.openqa.selenium.By;
@@ -38,6 +39,12 @@ public class MainPageSteps {
                 .setValue("/" + newPathName);
         CommonUtils.getButtonWithText("Add", CommonUtils.getAppRoot()).shouldBe(visible, enabled).shouldNotHave(attribute("disabled"))
                 .click();
+    }
+
+    @When("^delete path \"([^\"]*)\"$")
+    public void deletePath(String path) {
+        MainPageUtils.getPathWithName(path).contextClick();
+        MainPageUtils.getDropdownMenuItem("Delete").shouldBe(visible).click();
     }
 
     @And("^change API name to \"([^\"]*)\"$")
@@ -81,7 +88,7 @@ public class MainPageSteps {
     @And("^add contact info$")
     public void addContactInfo(DataTable table) {
         CommonUtils.getClickableLink(CommonUtils.Sections.CONTACT, MainPageUtils.CONTACT_SECTION).click();
-        for (List<String> dataRow : table.raw()) {
+        for (List<String> dataRow : table.cells()) {
             CommonUtils.setValueInLabel(dataRow.get(0), CommonUtils.getAppRoot().$("contact-section").$(By.className("name")), false);
             CommonUtils.setValueInLabel(dataRow.get(1), CommonUtils.getAppRoot().$("contact-section").$(By.className("email")), false);
             CommonUtils.setValueInLabel(dataRow.get(2), CommonUtils.getAppRoot().$("contact-section").$(By.className("url")), false);
@@ -121,7 +128,7 @@ public class MainPageSteps {
     public void createANewDataTypeWithLinkWith(DataTable table) {
         CommonUtils.getClickableLink(CommonUtils.Sections.DATA_TYPES, CommonUtils.getAppRoot()).click();
 
-        for (List<String> dataRow : table.raw()) {
+        for (List<String> dataRow : table.cells()) {
             MainPageUtils.createDataType(dataRow.get(0), dataRow.get(1), Boolean.valueOf(dataRow.get(2)));
         }
     }
@@ -129,7 +136,7 @@ public class MainPageSteps {
     @And("^create a new data type with plus sign with$")
     public void createANewDataTypeWithPlusSignWith(DataTable table) {
         CommonUtils.getNewPlusSignButton(CommonUtils.Sections.DATA_TYPES, CommonUtils.getAppRoot()).click();
-        for (List<String> dataRow : table.raw()) {
+        for (List<String> dataRow : table.cells()) {
             MainPageUtils.createDataType(dataRow.get(0), dataRow.get(1), Boolean.valueOf(dataRow.get(2)));
         }
     }

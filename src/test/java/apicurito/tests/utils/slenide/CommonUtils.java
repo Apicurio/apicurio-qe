@@ -1,5 +1,7 @@
 package apicurito.tests.utils.slenide;
 
+import apicurito.tests.configuration.TestConfiguration;
+import com.codeborne.selenide.Selenide;
 import com.codeborne.selenide.SelenideElement;
 import lombok.extern.slf4j.Slf4j;
 import org.openqa.selenium.By;
@@ -13,7 +15,7 @@ import static com.codeborne.selenide.Selenide.$;
 public class CommonUtils {
 
     public static SelenideElement getAppRoot() {
-        return $(By.tagName("app-root")).shouldBe(visible);
+        return $(By.cssSelector(TestConfiguration.getAppRoot())).shouldBe(visible);
     }
 
     public static SelenideElement getButtonWithText(String buttonText, SelenideElement differentRoot) {
@@ -38,6 +40,10 @@ public class CommonUtils {
     public static SelenideElement getLabelWithType(String labelType, SelenideElement differentRoot) {
         log.info("searching for label {}", labelType);
         return differentRoot.shouldBe(visible).$$("input").filter(attribute("type" , labelType)).first();
+    }
+
+    public static SelenideElement getClickableLink(Sections section, By differentRoot){
+        return getClickableLink(section, Selenide.$(differentRoot));
     }
 
     public static SelenideElement getClickableLink(Sections section, SelenideElement differentRoot){

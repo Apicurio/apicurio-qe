@@ -6,9 +6,9 @@ import apicurito.tests.utils.slenide.OperationUtils;
 import apicurito.tests.utils.slenide.PathUtils;
 import com.codeborne.selenide.ElementsCollection;
 import com.codeborne.selenide.SelenideElement;
-import cucumber.api.DataTable;
 import cucumber.api.java.en.And;
 import cucumber.api.java.en.Then;
+import io.cucumber.datatable.DataTable;
 import org.assertj.core.api.SoftAssertions;
 import org.junit.Rule;
 import org.openqa.selenium.By;
@@ -69,7 +69,7 @@ public class VerificationSteps {
     @And("^check that API contact info is$")
     public void checkThatAPIContactInfoIs(DataTable table) {
         CommonUtils.getAppRoot().$("title-bar").$("h1").click();
-        for (List<String> dataRow : table.raw()) {
+        for (List<String> dataRow : table.cells()) {
             String name = MainPageUtils.getMainPageRoot().$("contact-section").$(By.className("name")).getText();
             String email = MainPageUtils.getMainPageRoot().$("contact-section").$(By.className("email")).getText();
             String url = MainPageUtils.getMainPageRoot().$("contact-section").$(By.className("url")).getText();
