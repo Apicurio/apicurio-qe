@@ -28,6 +28,18 @@ public class TestConfiguration {
 
     public static final String APP_ROOT = "apicurito.config.app.root";
 
+    public static final String APICURITO_TEMPLATE_USE_OPERATOR = "apicurito.config.template.use.operator";
+    public static final String APICURITO_OPERATOR_CRD_URL = "apicurito.config.operator.crd";
+    public static final String APICURITO_OPERATOR_URL = "apicurito.config.operator.url";
+    public static final String APICURITO_OPERATOR_SERVICE_URL = "apicurito.config.operator.service";
+    public static final String APICURITO_OPERATOR_ROLE_URL = "apicurito.config.operator.role";
+    public static final String APICURITO_OPERATOR_ROLE_BINDING_URL = "apicurito.config.operator.rolebinding";
+    public static final String APICURITO_OPERATOR_CR_URL = "apicurito.config.operator.cr";
+    public static final String APICURITO_OPERATOR_TEMPLATE_URL = "apicurito.config.operator.template.url";
+
+    public static final String SYNDESIS_UI_USERNAME = "apicurito.config.ui.username";
+    public static final String SYNDESIS_UI_PASSWORD = "apicurito.config.ui.password";
+
     private static final TestConfiguration INSTANCE = new TestConfiguration();
 
     private final Properties properties = new Properties();
@@ -77,6 +89,34 @@ public class TestConfiguration {
         return get().readValue(OPENSHIFT_ROUTE_SUFFIX);
     }
 
+    public static boolean useOperator() {
+        return Boolean.parseBoolean(get().readValue(APICURITO_TEMPLATE_USE_OPERATOR));
+    }
+
+    public static String apicuritoOperatorCrdUrl() {
+        return get().readValue(APICURITO_OPERATOR_CRD_URL);
+    }
+
+    public static String apicuritoOperatorCrUrl() {
+        return get().readValue(APICURITO_OPERATOR_CR_URL);
+    }
+
+    public static String apicuritoOperatorUrl() {
+        return get().readValue(APICURITO_OPERATOR_URL);
+    }
+
+    public static String apicuritoOperatorServiceUrl() {
+        return get().readValue(APICURITO_OPERATOR_SERVICE_URL);
+    }
+
+    public static String apicuritoOperatorRoleUrl() {
+        return get().readValue(APICURITO_OPERATOR_ROLE_URL);
+    }
+
+    public static String apicuritoOperatorRoleBindingUrl() {
+        return get().readValue(APICURITO_OPERATOR_ROLE_BINDING_URL);
+    }
+
     public static int getConfigTimeout() {
         return Integer.parseInt(get().readValue(TESTSUITE_TIMEOUT, "300"));
     }
@@ -106,6 +146,35 @@ public class TestConfiguration {
 
         props.setProperty(OPENSHIFT_URL, "");
         props.setProperty(OPENSHIFT_TOKEN, "");
+
+        if (props.getProperty(APICURITO_OPERATOR_CRD_URL) == null) {
+            props.setProperty(APICURITO_OPERATOR_CRD_URL, String.format("https://raw.githubusercontent.com/Apicurio/apicurio-operators/master/apicurito/deploy/crds/apicur_v1alpha1_apicurito_crd.yaml"));
+        }
+        if (props.getProperty(APICURITO_OPERATOR_URL) == null) {
+            props.setProperty(APICURITO_OPERATOR_URL, String.format("https://raw.githubusercontent.com/Apicurio/apicurio-operators/master/apicurito/deploy/operator.yaml"));
+        }
+        if (props.getProperty(APICURITO_OPERATOR_CR_URL) == null) {
+            props.setProperty(APICURITO_OPERATOR_CR_URL, String.format("https://raw.githubusercontent.com/Apicurio/apicurio-operators/master/apicurito/deploy/crds/apicur_v1alpha1_apicurito_cr.yaml"));
+        }
+        if (props.getProperty(APICURITO_OPERATOR_SERVICE_URL) == null) {
+            props.setProperty(APICURITO_OPERATOR_SERVICE_URL, String.format("https://raw.githubusercontent.com/Apicurio/apicurio-operators/master/apicurito/deploy/service_account.yaml"));
+        }
+        if (props.getProperty(APICURITO_OPERATOR_ROLE_URL) == null) {
+            props.setProperty(APICURITO_OPERATOR_ROLE_URL, String.format("https://raw.githubusercontent.com/Apicurio/apicurio-operators/master/apicurito/deploy/role.yaml"));
+        }
+        if (props.getProperty(APICURITO_OPERATOR_ROLE_BINDING_URL) == null) {
+            props.setProperty(APICURITO_OPERATOR_ROLE_BINDING_URL, String.format("https://raw.githubusercontent.com/Apicurio/apicurio-operators/master/apicurito/deploy/role_binding.yaml"));
+        }
+
+        props.setProperty(APICURITO_TEMPLATE_USE_OPERATOR, "true");
+
+        // Copy syndesis properties to their xtf counterparts - used by binary oc client
+        System.setProperty("xtf.config.master.url", properties.getProperty(OPENSHIFT_URL));
+        System.setProperty("xtf.config.master.username", properties.getProperty(SYNDESIS_UI_USERNAME));
+        System.setProperty("xtf.config.master.password", properties.getProperty(SYNDESIS_UI_PASSWORD));
+
+        // Set oc version - this version of the client will be used as the binary client
+        System.setProperty("xtf.config.openshift.version", "3.11.0");
 
         return props;
     }

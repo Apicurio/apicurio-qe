@@ -35,11 +35,8 @@ public class TestRunner {
 
         if (Boolean.valueOf(TestConfiguration.doReinstall())) {
             ApicuritoTemplate.cleanNamespace();
-
             ApicuritoTemplate.setInputStreams();
-
-            ApicuritoTemplate.deployUsingTemplate();
-
+            ApicuritoTemplate.deploy();
             ApicuritoTemplate.waitForApicurito();
         }
 

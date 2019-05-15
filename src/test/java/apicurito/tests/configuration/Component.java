@@ -5,8 +5,10 @@ import lombok.Getter;
 @Getter
 public enum Component {
 
-    GENERATOR("fuse-apicurito-generator"),
-    UI("apicurito-ui");
+    //GENERATOR("fuse-apicurito-generator"),        //uncomment for template installation TODO
+    //UI("apicurito-ui"),
+
+    SERVICE("apicurito-service");
 
     private final String name;
 
