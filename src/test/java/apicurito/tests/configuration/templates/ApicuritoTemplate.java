@@ -1,9 +1,22 @@
 package apicurito.tests.configuration.templates;
 
-import static org.assertj.core.api.Assertions.fail;
+import apicurito.tests.configuration.Component;
+import apicurito.tests.configuration.TestConfiguration;
+import apicurito.tests.utils.HttpUtils;
+import apicurito.tests.utils.openshift.OpenShiftUtils;
+import cz.xtf.core.waiting.WaiterException;
+import io.fabric8.kubernetes.api.model.HasMetadata;
+import io.fabric8.kubernetes.api.model.KubernetesList;
+import io.fabric8.kubernetes.api.model.apps.Deployment;
+import io.fabric8.kubernetes.api.model.apps.ReplicaSet;
+import io.fabric8.kubernetes.client.KubernetesClientException;
+import io.fabric8.openshift.api.model.Template;
+import lombok.extern.slf4j.Slf4j;
+import org.yaml.snakeyaml.Yaml;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.EnumSet;
 import java.util.HashMap;
@@ -13,16 +26,7 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
 
-import apicurito.tests.configuration.Component;
-import apicurito.tests.configuration.TestConfiguration;
-import apicurito.tests.utils.openshift.OpenShiftUtils;
-import cz.xtf.core.waiting.WaiterException;
-import io.fabric8.kubernetes.api.model.HasMetadata;
-import io.fabric8.kubernetes.api.model.KubernetesList;
-import io.fabric8.kubernetes.api.model.apps.ReplicaSet;
-import io.fabric8.kubernetes.client.KubernetesClientException;
-import io.fabric8.openshift.api.model.Template;
-import lombok.extern.slf4j.Slf4j;
+import static org.assertj.core.api.Assertions.fail;
 
 @Slf4j
 public class ApicuritoTemplate {
@@ -39,9 +43,9 @@ public class ApicuritoTemplate {
         TestConfiguration.printDivider("Setting up input streams");
         log.info("Deploying input stream " + TestConfiguration.templateInputStreamUrl());
         final String output = OpenShiftUtils.binary().execute(
-            "apply",
-            "-n", TestConfiguration.openShiftNamespace(),
-            "-f", TestConfiguration.templateInputStreamUrl()
+                "apply",
+                "-n", TestConfiguration.openShiftNamespace(),
+                "-f", TestConfiguration.templateInputStreamUrl()
         );
     }
 
@@ -92,11 +96,11 @@ public class ApicuritoTemplate {
     private static void setTestEnvToOperator(String nameOfEnv, String valueOfEnv) {
         log.info("Setting test ENV: " + nameOfEnv + "=" + valueOfEnv);
         final String output = OpenShiftUtils.binary().execute(
-            "set",
-            "env",
-            "deployment",
-            "apicurito-operator",
-            nameOfEnv + "=" + valueOfEnv
+                "set",
+                "env",
+                "deployment",
+                "apicurito-operator",
+                nameOfEnv + "=" + valueOfEnv
         );
     }
 
@@ -104,24 +108,35 @@ public class ApicuritoTemplate {
         log.info("Creating " + itemName + " from: " + item);
 
         final String output = OpenShiftUtils.binary().execute(
-            "create",
-            "-n", TestConfiguration.openShiftNamespace(),
-            "-f", item
+                "create",
+                "-n", TestConfiguration.openShiftNamespace(),
+                "-f", item
         );
     }
 
     public static void applyInOCP(String itemName, String item) {
         log.info("Applying {} from: {}", itemName, item);
         final String output = OpenShiftUtils.binary().execute(
-            "apply", "-n", TestConfiguration.openShiftNamespace(), "-f", item
+                "apply", "-n", TestConfiguration.openShiftNamespace(), "-f", item
         );
     }
 
     public static void applyInOCP(String itemName, String namespace, String item) {
         log.info("Applying {} from: {}", itemName, item);
         final String output = OpenShiftUtils.binary().execute(
-            "apply", "-n", namespace, "-f", item
+                "apply", "-n", namespace, "-f", item
         );
+    }
+
+    public static String getOperatorImage() {
+        try {
+            String deploymentConfig = HttpUtils.readFileFromURL(new URL(TestConfiguration.apicuritoOperatorUrl()));
+            Map<String, Object> deployment = new Yaml().load(deploymentConfig);
+            return ((Map<String, String>) ((Map<String, List<Map>>) ((Map<String, Map>) deployment.get("spec")).get("template").get("spec")).get("containers").get(0)).get("image");
+        } catch (MalformedURLException e) {
+            log.error("Proper URL was not supplied", e);
+            return null;
+        }
     }
 
     public static void cleanNamespace() {
@@ -141,7 +156,7 @@ public class ApicuritoTemplate {
             OpenShiftUtils.getInstance().clean();
 
             List<ReplicaSet> operatorReplicaSets =
-                OpenShiftUtils.getInstance().apps().replicaSets().inNamespace(TestConfiguration.openShiftNamespace()).list().getItems();
+                    OpenShiftUtils.getInstance().apps().replicaSets().inNamespace(TestConfiguration.openShiftNamespace()).list().getItems();
 
             for (ReplicaSet rs : operatorReplicaSets) {
                 OpenShiftUtils.binary().execute("delete", "rs", rs.getMetadata().getName());
@@ -165,11 +180,11 @@ public class ApicuritoTemplate {
         ExecutorService executorService = Executors.newFixedThreadPool(components.size());
         components.forEach(c -> {
             Runnable runnable = () ->
-                OpenShiftUtils.xtf().waiters()
-                    .areExactlyNPodsReady(numberOfPods, key, c.getName())
-                    .interval(TimeUnit.SECONDS, 10)
-                    .timeout(TimeUnit.MINUTES, 6)
-                    .waitFor();
+                    OpenShiftUtils.xtf().waiters()
+                            .areExactlyNPodsReady(numberOfPods, key, c.getName())
+                            .interval(TimeUnit.SECONDS, 10)
+                            .timeout(TimeUnit.MINUTES, 6)
+                            .waitFor();
             executorService.submit(runnable);
         });
 

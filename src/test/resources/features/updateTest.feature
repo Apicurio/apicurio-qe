@@ -11,7 +11,7 @@ Feature: Update scenario test
 
   @testOperatorhub
   Scenario: test operatorhub
-    When deploy apicurito into operatorhub and subscribe
+    When deploy operator from operatorhub
     Then check that apicurito operator is deployed and in running state
 
 

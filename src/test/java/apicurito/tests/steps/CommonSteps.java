@@ -9,7 +9,13 @@ import static com.codeborne.selenide.Condition.text;
 import static com.codeborne.selenide.Condition.visible;
 import static com.codeborne.selenide.Selenide.$;
 import static com.codeborne.selenide.Selenide.$$;
+import static org.junit.Assert.fail;
 
+import io.syndesis.qe.marketplace.openshift.OpenShiftConfiguration;
+import io.syndesis.qe.marketplace.openshift.OpenShiftService;
+import io.syndesis.qe.marketplace.openshift.OpenShiftUser;
+import io.syndesis.qe.marketplace.quay.QuayService;
+import io.syndesis.qe.marketplace.quay.QuayUser;
 import org.assertj.core.api.Condition;
 import org.openqa.selenium.By;
 
@@ -17,6 +23,7 @@ import com.codeborne.selenide.Selenide;
 import com.codeborne.selenide.SelenideElement;
 
 import java.io.File;
+import java.io.IOException;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
 
@@ -275,4 +282,72 @@ public class CommonSteps {
             .timeout(TimeUnit.MINUTES, 3)
             .waitFor();
     }
+
+    @Given("deploy operator from operatorhub")
+    public void deployOperatorHub() {
+        QuayUser quayUser = new QuayUser(
+                TestConfiguration.getQuayUsername(),
+                TestConfiguration.getQuayPassword(),
+                TestConfiguration.getQuayNamespace(),
+                TestConfiguration.getQuayToken()
+        );
+
+        QuayService quayService = new QuayService(
+                quayUser,
+                ApicuritoTemplate.getOperatorImage(),
+                null
+        );
+        String quayProject = null;
+        try {
+            quayProject = quayService.createQuayProject();
+        } catch (Exception e) {
+            log.error("Could not create quay project", e);
+            fail("Could not create quay project");
+        }
+
+        OpenShiftUser adminUser = new OpenShiftUser(
+                TestConfiguration.getOpenshiftUsername(),
+                TestConfiguration.getOpenshiftPassword(),
+                TestConfiguration.openShiftUrl()
+        );
+
+        OpenShiftConfiguration ocpConfig = OpenShiftConfiguration.builder()
+                .namespace(TestConfiguration.openShiftNamespace())
+                .pullSecretName("apicurito-pullsecret")
+                .pullSecret(TestConfiguration.getPullSecret())
+                .quayOpsrcToken(TestConfiguration.getQuayOpsrcToken())
+                .installedCSV(quayService.getInstalledCSV())
+                .build();
+
+        OpenShiftService ocpService = new OpenShiftService(
+                TestConfiguration.getQuayNamespace(),
+                quayService.getPackageName(),
+                ocpConfig,
+                adminUser,
+                null
+        );
+
+        try {
+            ocpService.deployOperator();
+        } catch (IOException e) {
+            log.error("Could not deploy operator into openshift", e);
+            fail("Could not deploy operator into openshift" + e.getMessage());
+        }
+
+        ocpService.deleteOpsrcToken();
+        ocpService.deleteOperatorSource();
+
+        OpenShiftUtils.getInstance().serviceAccounts()
+                .inNamespace(TestConfiguration.openShiftNamespace())
+                .withName("apicurito")
+                .edit()
+                .addNewImagePullSecret("apicurito-pullsecret")
+                .done();
+
+        OpenShiftUtils.getInstance()
+                .deletePods("name", "apicurito-operator");
+
+        new CommonSteps().checkThatApicuritoOperatorIsDeployedAndInRunningState();
+    }
+
 }

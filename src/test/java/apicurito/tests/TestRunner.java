@@ -1,26 +1,34 @@
 package apicurito.tests;
 
+import apicurito.tests.configuration.Component;
+import apicurito.tests.configuration.TestConfiguration;
+import apicurito.tests.configuration.templates.ApicuritoTemplate;
+import apicurito.tests.steps.CommonSteps;
+import apicurito.tests.utils.openshift.OpenShiftUtils;
+import com.codeborne.selenide.Configuration;
+import cucumber.api.CucumberOptions;
+import cucumber.api.junit.Cucumber;
+import io.syndesis.qe.marketplace.openshift.OpenShiftConfiguration;
+import io.syndesis.qe.marketplace.openshift.OpenShiftService;
+import io.syndesis.qe.marketplace.openshift.OpenShiftUser;
+import io.syndesis.qe.marketplace.quay.QuayService;
+import io.syndesis.qe.marketplace.quay.QuayUser;
+import lombok.extern.slf4j.Slf4j;
 import org.junit.AfterClass;
 import org.junit.BeforeClass;
 import org.junit.runner.RunWith;
 
-import com.codeborne.selenide.Configuration;
+import java.io.IOException;
 
-import apicurito.tests.configuration.Component;
-import apicurito.tests.configuration.TestConfiguration;
-import apicurito.tests.configuration.templates.ApicuritoTemplate;
-import apicurito.tests.utils.openshift.OpenShiftUtils;
-import cucumber.api.CucumberOptions;
-import cucumber.api.junit.Cucumber;
-import lombok.extern.slf4j.Slf4j;
+import static org.junit.Assert.fail;
 
 @Slf4j
 @RunWith(Cucumber.class)
 @CucumberOptions(
-    features = "classpath:features",
-    tags = {"not @manual", "not @wip", "not @ignore"},
-    plugin = {"pretty", "html:target/cucumber/cucumber-html", "junit:target/cucumber/cucumber-junit.xml",
-        "json:target/cucumber/cucumber-report.json"})
+        features = "classpath:features",
+        tags = {"not @manual", "not @wip", "not @ignore"},
+        plugin = {"pretty", "html:target/cucumber/cucumber-html", "junit:target/cucumber/cucumber-junit.xml",
+                "json:target/cucumber/cucumber-report.json"})
 public class TestRunner {
 
     @BeforeClass
@@ -29,7 +37,7 @@ public class TestRunner {
         if (OpenShiftUtils.xtf().getProject(TestConfiguration.openShiftNamespace()) == null) {
             log.info("Creating new project " + TestConfiguration.openShiftNamespace());
             final String output = OpenShiftUtils.binary().execute(
-                "new-project", TestConfiguration.openShiftNamespace()
+                    "new-project", TestConfiguration.openShiftNamespace()
             );
             try {
                 Thread.sleep(10 * 1000);
@@ -61,7 +69,7 @@ public class TestRunner {
     @AfterClass
     public static void afterTests() {
         log.info("After Tests");
-        if("operatorhub".equals(TestConfiguration.openShiftNamespace())){
+        if ("operatorhub".equals(TestConfiguration.openShiftNamespace())) {
             ApicuritoTemplate.cleanOcpAfterOperatorhubTest();
         }
         if (TestConfiguration.namespaceCleanupAfter()) {

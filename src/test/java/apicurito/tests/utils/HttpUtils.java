@@ -7,7 +7,11 @@ import javax.net.ssl.SSLSocketFactory;
 import javax.net.ssl.TrustManager;
 import javax.net.ssl.X509TrustManager;
 
+import java.io.BufferedReader;
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.net.URL;
 import java.security.KeyManagementException;
 import java.security.NoSuchAlgorithmException;
 import java.security.cert.CertificateException;
@@ -151,5 +155,16 @@ public final class HttpUtils {
             fail("Error while creating Http client", e);
         }
         return null;
+    }
+
+    public static String readFileFromURL(URL url){
+        String ret = null;
+        try (InputStream is = url.openStream()) {
+            BufferedReader reader = new BufferedReader(new InputStreamReader(is));
+            ret = reader.lines().reduce((s1, s2) -> s1 + "\n" + s2).get();
+        } catch (IOException e){
+            log.error("An exception raised when reading from {}", url, e);
+        }
+        return ret;
     }
 }
