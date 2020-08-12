@@ -204,17 +204,16 @@ Feature: Main page tests
   Scenario: Create a server on main page
     When import API "src/test/resources/preparedAPIs/basicV3.yaml"
     And create a server on "main page" page
-      | http://{domain}.example.com:{port}/api | server desc | false |
+      | http://{domain}.example.com/api/1 | server desc | false |
 
-    And configure server variables for "http://{domain}.example.com:{port}/api" on "main page" page
+    And configure server variables for "http://{domain}.example.com/api/1" on "main page" page
       | domain | domain1 | domain desc |
-      | port   | port1   | port desc   |
 
     Then save API as "json" and close editor
     When import API "tmp/download/openapi-spec.json"
 
     Then check that server was created on "main page" page
-      | http://{domain}.example.com:{port}/api | server desc |
+      | http://{domain}.example.com/api/1 | server desc |
 
     #Variables cannot be checked in UI (check the source json)
 
@@ -223,18 +222,17 @@ Feature: Main page tests
     When import API "src/test/resources/preparedAPIs/basicV3.yaml"
     And select path "/clearPath"
     And create a server on "path" page
-      | http://{domain}.example.com:{port}/api | server desc | true |
+      | http://{domain}.example.com/api/1 | server desc | true |
 
-    And configure server variables for "http://{domain}.example.com:{port}/api" on "path" page
+    And configure server variables for "http://{domain}.example.com/api/1" on "path" page
       | domain | domain1 | domain desc |
-      | port   | port1   | port desc   |
 
     Then save API as "json" and close editor
     When import API "tmp/download/openapi-spec.json"
 
     And select path "/clearPath"
     Then check that server was created on "path" page
-      | http://{domain}.example.com:{port}/api | server desc |
+      | http://{domain}.example.com/api/1 | server desc |
 
   @createServerOperationsPage
   Scenario: Create a server on operations page
@@ -242,11 +240,10 @@ Feature: Main page tests
     And select path "/operations"
     And select operation "GET"
     And create a server on "operations" page
-      | http://{domain}.example.com:{port}/api | server desc | true |
+      | http://{domain}.example.com/api/1 | server desc | true |
 
-    When configure server variables for "http://{domain}.example.com:{port}/api" on "operations" page
+    When configure server variables for "http://{domain}.example.com/api/1" on "operations" page
       | domain | domain1 | domain desc |
-      | port   | port1   | port desc   |
 
     Then save API as "json" and close editor
     When import API "tmp/download/openapi-spec.json"
@@ -254,7 +251,7 @@ Feature: Main page tests
     And select path "/operations"
     And select operation "GET"
     Then check that server was created on "operations" page
-      | http://{domain}.example.com:{port}/api | server desc |
+      | http://{domain}.example.com/api/1 | server desc |
 
   #TODO after closing:
   # https://github.com/Apicurio/apicurio-studio/issues/656

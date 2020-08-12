@@ -177,10 +177,10 @@ Feature: Basic tests
     And convert OpenAPI two to OpenAPI three
 
     And create a server on "main page" page
-      | http://{domain}.example.com:{port}/api | server desc | false |
+      | http://{domain}.example.com/api/1 | server desc | false |
 
     Then check that server was created on "main page" page
-      | http://{domain}.example.com:{port}/api | server desc |
+      | http://{domain}.example.com/api/1 | server desc |
 
     And check that path "/clearpath" "is" created
     And check that path "/operations" "is" created
