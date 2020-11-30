@@ -66,4 +66,6 @@ apicurito.config.openshift.namespace.cleanup.after=false
 apicurito.config.openshift.route.suffix={minishift ip}.nip.io
 apicurito.config.ui.url=https://{namespace}.{minishift ip}.nip.io
 apicurito.config.openshift.reinstall=true
+apicurito.config.ui.username=username
+apicurito.config.ui.password=password
 ```
