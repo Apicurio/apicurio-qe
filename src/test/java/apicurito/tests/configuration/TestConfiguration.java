@@ -34,6 +34,7 @@ public class TestConfiguration {
     public static final String APICURITO_OPERATOR_CRD_URL = "apicurito.config.operator.crd";
     public static final String APICURITO_OPERATOR_DEPLOYMENT_URL = "apicurito.config.operator.url";
     public static final String APICURITO_OPERATOR_IMAGE_URL = "apicurito.config.operator.image.url";
+    public static final String APICURITO_OPERATOR_METADATA_URL = "apicurito.config.operator.metadata.url";
     public static final String APICURITO_OPERATOR_SERVICE_URL = "apicurito.config.operator.service";
     public static final String APICURITO_OPERATOR_ROLE_URL = "apicurito.config.operator.role";
     public static final String APICURITO_OPERATOR_ROLE_BINDING_URL = "apicurito.config.operator.rolebinding";
@@ -52,6 +53,7 @@ public class TestConfiguration {
     public static final String QUAY_NAMESPACE = "apicurito.config.quay.namespace";
     public static final String QUAY_TOKEN = "apicurito.config.quay.auth.token";
     public static final String QUAY_OPSRC_TOKEN = "apicurito.config.quay.opsrc.token";
+    public static final String QUAY_PULL_SECRET = "apicurito.config.quay.pull.secret";
 
     private static final TestConfiguration INSTANCE = new TestConfiguration();
 
@@ -128,6 +130,10 @@ public class TestConfiguration {
         return get().readValue(APICURITO_OPERATOR_IMAGE_URL);
     }
 
+    public static String apicuritoOperatorMetadataUrl() {
+        return get().readValue(APICURITO_OPERATOR_METADATA_URL);
+    }
+
     public static String apicuritoOperatorServiceUrl() {
         return get().readValue(APICURITO_OPERATOR_SERVICE_URL);
     }
@@ -194,6 +200,10 @@ public class TestConfiguration {
 
     public static String getQuayToken() {
         return get().readValue(QUAY_TOKEN);
+    }
+
+    public static String getQuayPullSecret() {
+        return get().readValue(QUAY_PULL_SECRET);
     }
 
     public static String openshiftUsername() {
