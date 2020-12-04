@@ -188,7 +188,7 @@ public class ApicuritoTemplate {
 
         // as this testsuite is not testing generator, set it to empty string
         // when not set to empty string, there is ImagePullBackOff when trying to access private registry
-        ConfigurationOCPUtils.setTestEnvToOperator("RELATED_IMAGE_GENERATOR", "");
+        ConfigurationOCPUtils.setTestEnvToOperator("RELATED_IMAGE_GENERATOR", "docker.io/mmajerni/gentest:latest");
 
         if (TestConfiguration.apicuritoUiImageUrl() != null) {
             ConfigurationOCPUtils.setTestEnvToOperator("RELATED_IMAGE_APICURITO", TestConfiguration.apicuritoUiImageUrl());
