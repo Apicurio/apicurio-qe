@@ -18,7 +18,7 @@ import java.util.concurrent.TimeoutException;
 
 import apicurito.tests.configuration.Component;
 import apicurito.tests.configuration.TestConfiguration;
-import apicurito.tests.configuration.templates.ApicuritoTemplate;
+import apicurito.tests.configuration.templates.ApicuritoInstall;
 import apicurito.tests.utils.openshift.OpenShiftUtils;
 import apicurito.tests.utils.slenide.ConfigurationOCPUtils;
 import io.cucumber.java.en.Then;
@@ -53,7 +53,7 @@ public class ConfigurationOCPSteps {
 
         log.info("Waiting for Apicurito pods");
         if ("first".equals(sequenceNumber)) {
-            ApicuritoTemplate.waitForApicurito("component", 4, Component.SERVICE);
+            ApicuritoInstall.waitForApicurito("component", 4, Component.SERVICE);
         } else {
             ConfigurationOCPUtils.waitForRollout();
         }
@@ -150,7 +150,7 @@ public class ConfigurationOCPSteps {
 
     @When("delete running instance of apicurito")
     public void deleteRunningInstanceOfApicurito() {
-        ApicuritoTemplate.cleanNamespace();
+        ApicuritoInstall.cleanNamespace();
     }
 
     @Then("clean openshift after operatorhub test")
@@ -161,13 +161,13 @@ public class ConfigurationOCPSteps {
         OpenShiftUtils.binary().execute("delete", "csv", csv);
         OpenShiftUtils.binary().execute("delete", "subscription", "fuse-apicurito");
         OpenShiftUtils.binary().execute("delete", "CatalogSource", "apicurito-test-catalog", "-n", "openshift-marketplace");
-        ApicuritoTemplate.cleanNamespace();
+        ApicuritoInstall.cleanNamespace();
     }
 
     @Then("reinstall apicurito")
     public void reinstallApicurito() {
-        ApicuritoTemplate.cleanNamespace();
-        ApicuritoTemplate.reinstallApicurito();
+        ApicuritoInstall.cleanNamespace();
+        ApicuritoInstall.reinstallApicurito();
     }
 
     @Then("check that metering labels have correct values for \"([^\"]*)\"$")
