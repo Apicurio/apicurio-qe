@@ -1,6 +1,7 @@
 package apicurito.tests.steps;
 
 import apicurito.tests.utils.slenide.CommonUtils;
+import apicurito.tests.utils.slenide.OperationUtils;
 import apicurito.tests.utils.slenide.PathUtils;
 import com.codeborne.selenide.SelenideElement;
 import io.cucumber.java.en.When;
@@ -33,39 +34,55 @@ public class PathSteps {
                 .click();
     }
 
-    @When("^create path parameter \"([^\"]*)\"$")
-    public void createPathParameter(String parameter) {
-        PathUtils.createPathParameter(parameter);
+    /**
+     * @param page can only have values "path" and "operation"
+     */
+    @When("^create path parameter \"([^\"]*)\" on \"([^\"]*)\" page")
+    public void createPathParameter(String parameter, String page) {
+        PathUtils.createPathParameter(parameter, PathUtils.getRoot(page));
     }
 
-    @When("^set description \"([^\"]*)\" for path parameter \"([^\"]*)\"$")
-    public void setDescriptionPathParameter(String description, String parameter) {
-        PathUtils.openPathDescription(parameter);
-        CommonUtils.setValueInTextArea(description, PathUtils.getPathPageRoot().$(PathElements.PARAMETERS_SECTION));
+    /**
+     * @param page can only have values "path" and "operation"
+     */
+    @When("^set description \"([^\"]*)\" for path parameter \"([^\"]*)\" on \"([^\"]*)\" page")
+    public void setDescriptionPathParameter(String description, String parameter, String page) {
+        SelenideElement root = PathUtils.getRoot(page);
+        PathUtils.openPathDescription(parameter, PathUtils.getRoot(page));
+        CommonUtils.setValueInTextArea(description, root.$(PathElements.PARAMETERS_SECTION));
     }
 
-    @When("^set path parameter type \"([^\"]*)\" for path parameter \"([^\"]*)\"$")
-    public void setPathParameterTypeForPathParameter(String type, String parameter) {
-        PathUtils.openPathTypes(parameter);
-        SelenideElement parameterElement = PathUtils.getPathPageRoot().$(PathElements.PARAMETERS_SECTION).$$(PathElements.PATH_PARAMETERS_ROW)
+    /**
+     * @param page can only have values "path" and "operation"
+     */
+    @When("^set path parameter type \"([^\"]*)\" for path parameter \"([^\"]*)\" on \"([^\"]*)\" page")
+    public void setPathParameterTypeForPathParameter(String type, String parameter, String page) {
+        SelenideElement root = PathUtils.getRoot(page);
+        PathUtils.openPathTypes(parameter, root);
+        SelenideElement parameterElement = root.$(PathElements.PARAMETERS_SECTION).$$(PathElements.PATH_PARAMETERS_ROW)
                 .filter(text(parameter)).first();
 
         CommonUtils.setDropDownValue(CommonUtils.DropdownButtons.PROPERTY_TYPE.getButtonId(), type, parameterElement);
     }
 
-    @When("^set path parameter type of \"([^\"]*)\" for path parameter \"([^\"]*)\"$")
-    public void setPathParameterTypeOfForPathParameter(String of, String parameter) {
-        PathUtils.openPathTypes(parameter);
-        SelenideElement parameterElement = PathUtils.getPathPageRoot().$(PathElements.PARAMETERS_SECTION).$$(PathElements.PATH_PARAMETERS_ROW)
+    @When("^set path parameter type of \"([^\"]*)\" for path parameter \"([^\"]*)\" on \"([^\"]*)\" page")
+    public void setPathParameterTypeOfForPathParameter(String of, String parameter, String page) {
+        SelenideElement root = PathUtils.getRoot(page);
+        PathUtils.openPathTypes(parameter, root);
+        SelenideElement parameterElement = root.$(PathElements.PARAMETERS_SECTION).$$(PathElements.PATH_PARAMETERS_ROW)
                 .filter(text(parameter)).first();
 
         CommonUtils.setDropDownValue(CommonUtils.DropdownButtons.PROPERTY_TYPE_OF.getButtonId(), of, parameterElement);
     }
 
-    @When("^set path parameter type as \"([^\"]*)\" for path parameter \"([^\"]*)\"$")
-    public void setPathParameterTypeAsForPathParameter(String as, String parameter) {
-        PathUtils.openPathTypes(parameter);
-        SelenideElement parameterElement = PathUtils.getPathPageRoot().$(PathElements.PARAMETERS_SECTION).$$(PathElements.PATH_PARAMETERS_ROW)
+    /**
+     * @param page can only have values "path" and "operation"
+     */
+    @When("^set path parameter type as \"([^\"]*)\" for path parameter \"([^\"]*)\" on \"([^\"]*)\" page")
+    public void setPathParameterTypeAsForPathParameter(String as, String parameter, String page) {
+        SelenideElement root = PathUtils.getRoot(page);
+        PathUtils.openPathTypes(parameter, root);
+        SelenideElement parameterElement = root.$(PathElements.PARAMETERS_SECTION).$$(PathElements.PATH_PARAMETERS_ROW)
                 .filter(text(parameter)).first();
 
         CommonUtils.setDropDownValue(CommonUtils.DropdownButtons.PROPERTY_TYPE_AS.getButtonId(), as, parameterElement);

@@ -123,4 +123,12 @@ public class OperationVerifications {
             assertThat(requirementList.size()).as("Requirement %s exists, and should not", requirement).isEqualTo(0);
         }
     }
+
+    @Then("^check that path parameter \"([^\"]*)\" is created in operation")
+    public void checkThatPathParameterIsCreatedInOperation(String parameter) {
+        SelenideElement parameterElement = OperationUtils.getOperationRoot().$(OperationElements.PATH_PARAMETERS_SECTION).
+            $$(OperationElements.PATH_PARAMETERS_ROW).filter(matchText(parameter)).first();
+
+        assertThat(parameterElement.$("div").getAttribute("class")).as("Path parameter %s is not created", parameter).doesNotContain("missing");
+    }
 }

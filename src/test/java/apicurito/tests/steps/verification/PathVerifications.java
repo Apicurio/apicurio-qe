@@ -34,18 +34,25 @@ public class PathVerifications {
         assertThat(parameterElement.$("div").getAttribute("class")).as("Path parameter %s is not created", parameter).doesNotContain("missing");
     }
 
-    @Then("^check that path parameter \"([^\"]*)\" has description \"([^\"]*)\"$")
-    public void checkThatPathParameterHasDescription(String parameter, String description) {
-        SelenideElement descriptionElement = PathUtils.getPathPageRoot().$(PathElements.PATH_PARAMETERS_SECTION).$$(PathElements.PATH_PARAMETERS_ROW)
+    /**
+     * @param page can only have values "path" and "operation"
+     */
+    @Then("^check that path parameter \"([^\"]*)\" on \"([^\"]*)\" page has description \"([^\"]*)\"$")
+    public void checkThatPathParameterHasDescription(String parameter, String page, String description) {
+        SelenideElement descriptionElement = PathUtils.getRoot(page).$(PathElements.PATH_PARAMETERS_SECTION).$$(PathElements.PATH_PARAMETERS_ROW)
                 .filter(matchText(parameter)).first().$(By.className("description"));
 
         assertThat(descriptionElement.getText()).as("Description for path parameter %s is different", parameter).isEqualTo(description);
     }
 
-    @Then("^check that path parameter \"([^\"]*)\" has \"([^\"]*)\" type with value \"([^\"]*)\"$")
-    public void checkThatPathParameterHasTypeAs(String parameter, String type,  String expectedAs) {
-        PathUtils.openPathTypes(parameter);
-        String as = PathUtils.getPathPageRoot().$(PathElements.PATH_PARAMETERS_SECTION).$$(PathElements.PATH_PARAMETERS_ROW)
+    /**
+     * @param page can only have values "path" and "operation"
+     */
+    @Then("^check that path parameter \"([^\"]*)\" on \"([^\"]*)\" page has \"([^\"]*)\" type with value \"([^\"]*)\"$")
+    public void checkThatPathParameterHasTypeAs(String parameter, String page, String type, String expectedAs) {
+        SelenideElement root = PathUtils.getRoot(page);
+        PathUtils.openPathTypes(parameter,root);
+        String as = root.$(PathElements.PATH_PARAMETERS_SECTION).$$(PathElements.PATH_PARAMETERS_ROW)
                 .filter(text(parameter)).first().$(CommonUtils.getButtonId(type)).getText();
         assertThat(as).as("%s is %s but should be %s", type, as, expectedAs).isEqualTo(expectedAs);
     }

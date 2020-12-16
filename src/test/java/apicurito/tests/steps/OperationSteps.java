@@ -23,14 +23,17 @@ import lombok.extern.slf4j.Slf4j;
 @Slf4j
 public class OperationSteps {
 
-    private static class OperationElements {
+    public static class OperationElements {
         private static By DESCRIPTION = By.className("description");
         private static By A = By.cssSelector("a");
 
         private static By RESPONSE_SECTION = By.cssSelector("responses-section");
         private static By REQUEST_BODY_SECTION = By.cssSelector("requestbody-section");
-        private static By PATH_PARAMETERS_SECTION = By.cssSelector("path-params-section");
         private static By REQUIREMENTS_SECTION = By.cssSelector("security-requirements-section");
+
+        public static By getDescription() {
+            return DESCRIPTION;
+        }
     }
 
     @When("^set operation summary \"([^\"]*)\"$")
@@ -82,18 +85,6 @@ public class OperationSteps {
     @When("^override parameter \"([^\"]*)\"$")
     public void overrideParameter(String parameter) {
         OperationUtils.overrideParameter(parameter);
-    }
-
-    @When("^set description \"([^\"]*)\" for override path parameter \"([^\"]*)\" in operation$")
-    public void setDescriptionForOverridePathParameterInOperation(String description, String parameter) {
-        log.info("Setting description {} for overriden parameter {}", description, parameter);
-
-        SelenideElement parameterElement = OperationUtils.getOperationRoot().$(OperationElements.PATH_PARAMETERS_SECTION)
-                .$$("path-param-row").filter(text(parameter)).first();
-
-        parameterElement.$(OperationElements.DESCRIPTION).click();
-
-        CommonUtils.setValueInTextArea(description, parameterElement);
     }
 
     /**

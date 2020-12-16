@@ -46,12 +46,13 @@ public class PathUtils {
         return differentRoot.$(By.className(operation.toString().toLowerCase() + "-tab")).waitUntil(visible, 5000).shouldBe(enabled);
     }
 
-    public static void createPathParameter(String parameter) {
-        CommonUtils.getButtonWithText("Create", getPathPageRoot().$$(PathElements.PATH_PARAMETERS_ROW).filter(text(parameter)).first()).click();
+    public static void createPathParameter(String parameter, SelenideElement root) {
+        CommonUtils.getButtonWithText("Create", root.$$(PathElements.PATH_PARAMETERS_ROW)
+            .filter(text(parameter)).first()).click();
     }
 
-    public static void openPathDescription(String parameter) {
-        ElementsCollection elements = getPathPageRoot().$$(PathElements.PATH_PARAMETERS_ROW)
+    public static void openPathDescription(String parameter, SelenideElement root) {
+        ElementsCollection elements = root.$$(PathElements.PATH_PARAMETERS_ROW)
                 .filter(text(parameter)).first()
                 .$$("div").filter(attribute("class", "description"));
         if (elements.size() == 1) {
@@ -59,12 +60,16 @@ public class PathUtils {
         }
     }
 
-    public static void openPathTypes(String parameter) {
-        ElementsCollection elements = getPathPageRoot().$$(PathElements.PATH_PARAMETERS_ROW)
+    public static void openPathTypes(String parameter, SelenideElement root) {
+        ElementsCollection elements = root.$$(PathElements.PATH_PARAMETERS_ROW)
                 .filter(text(parameter)).first()
                 .$$("div").filter(attribute("class", "summary"));
         if (elements.size() == 1) {
             elements.first().click();
         }
+    }
+
+    public static SelenideElement getRoot(String page) {
+        return page.equals("path") ? PathUtils.getPathPageRoot() : OperationUtils.getOperationRoot();
     }
 }
