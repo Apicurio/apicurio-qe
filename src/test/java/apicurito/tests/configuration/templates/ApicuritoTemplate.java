@@ -122,7 +122,7 @@ public class ApicuritoTemplate extends ApicuritoInstall {
         }
     }
 
-    public static void reinstallApicurito() {
+    public static void reinstallApicurito(){
         setImageStreams();
         deploy();
         waitForApicurito("component", 1, Component.UI);
