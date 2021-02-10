@@ -4,9 +4,17 @@ import static com.codeborne.selenide.Condition.attribute;
 import static com.codeborne.selenide.Condition.text;
 
 import java.io.File;
+import java.io.FileInputStream;
+import java.io.IOException;
+import java.io.OutputStream;
+import java.nio.file.Files;
+import java.util.zip.ZipEntry;
+import java.util.zip.ZipInputStream;
 
 import apicurito.tests.configuration.CustomWebDriverProvider;
 import lombok.extern.slf4j.Slf4j;
+
+import org.apache.commons.io.IOUtils;
 
 @Slf4j
 public class ImportExportUtils {
@@ -30,5 +38,47 @@ public class ImportExportUtils {
 
     public static void importAPI(File file) {
         CommonUtils.getAppRoot().$("#load-file").uploadFile(file);
+    }
+
+    public static File exportFuseCamelProject() {
+        CommonUtils.getAppRoot().$$("button")
+                .filter(attribute("class", "btn btn-lg btn-default dropdown-toggle")).first().click();
+        CommonUtils.getAppRoot().$$("a").filter(text("Fuse Camel Project")).first().click();
+
+        String filePath = CustomWebDriverProvider.DOWNLOAD_DIR + File.separator + "camel-project.zip";
+
+        // wait for download
+        try {
+            Thread.sleep(5000);
+        } catch (InterruptedException exception) {
+            log.warn("Wait for download failed. The project is not generated.");
+        }
+        return new File(filePath);
+    }
+
+    public static void decompressZip(File source, File destination) throws Exception {
+        log.info("Decompressing ZIP file");
+        try (ZipInputStream i = new ZipInputStream(new FileInputStream(source))) {
+            ZipEntry entry;
+            while ((entry = i.getNextEntry()) != null) {
+                final String name = destination.getAbsolutePath() + File.separator + entry.getName();
+                final File file = new File(name);
+                if (entry.isDirectory()) {
+                    if (!file.isDirectory() && !file.mkdirs()) {
+                        throw  new IOException("Failed tp create directory " + file);
+                    }
+                } else {
+                    final File parent = file.getParentFile();
+                    if (!parent.isDirectory() && !parent.mkdirs()) {
+                        throw new IOException("Failed to create directory " + parent);
+                    }
+                    try (OutputStream o = Files.newOutputStream(file.toPath())) {
+                        IOUtils.copy(i, o);
+                    }
+                }
+            }
+        } catch (Exception e) {
+            log.error("Can't decompress EnMasse.", e);
+        }
     }
 }
