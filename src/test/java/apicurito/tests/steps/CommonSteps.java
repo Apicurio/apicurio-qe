@@ -9,6 +9,8 @@ import static com.codeborne.selenide.Selenide.$;
 import static com.codeborne.selenide.Selenide.$$;
 import static org.assertj.core.api.Assertions.assertThat;
 
+import org.apache.maven.it.VerificationException;
+
 import org.assertj.core.api.Condition;
 import org.openqa.selenium.By;
 
@@ -16,15 +18,22 @@ import com.codeborne.selenide.Selenide;
 import com.codeborne.selenide.SelenideElement;
 
 import java.io.File;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.List;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 
 import apicurito.tests.configuration.TestConfiguration;
 import apicurito.tests.utils.slenide.CommonUtils;
 import apicurito.tests.utils.slenide.ImportExportUtils;
 import apicurito.tests.utils.slenide.MainPageUtils;
+import apicurito.tests.utils.slenide.MavenUtils;
 import apicurito.tests.utils.slenide.OperationUtils;
 import apicurito.tests.utils.slenide.PathUtils;
+import cz.xtf.core.http.Https;
 import io.cucumber.datatable.DataTable;
+import io.cucumber.java.en.And;
 import io.cucumber.java.en.Given;
 import io.cucumber.java.en.Then;
 import io.cucumber.java.en.When;
@@ -60,6 +69,52 @@ public class CommonSteps {
     @When("^import API \"([^\"]*)\"$")
     public void importAPI(String pathtoFile) {
         ImportExportUtils.importAPI(new File(pathtoFile));
+    }
+
+    @And("^generate and export fuse camel project$")
+    public void generateAndExportFuseCamelProject() {
+        File exportedFuseCamelProject = ImportExportUtils.exportFuseCamelProject();
+        assertThat(exportedFuseCamelProject)
+                .exists()
+                .isFile()
+                .has(new Condition<>(f -> f.length() > 0, "File size should be greater than 0"));
+    }
+
+    @And("^unzip and run generated fuse camel project$")
+    public void unzipAndRunGeneratedFuseCamelProject() throws Exception {
+        final Path sourceFolder = Paths.get("tmp" + File.separator + "download");
+        final File archive = sourceFolder.resolve("camel-project.zip").toFile();
+        final File destination = sourceFolder.resolve("camel-project").toFile();
+        ImportExportUtils.decompressZip(archive, destination);
+        log.info("Fuse Camel Project is decompressed to {}", destination);
+    }
+
+    @And("^check that project is generated correctly$")
+    public void checkThatProjectIsGeneratedCorrectly() throws VerificationException {
+        final Path sourceFolder = Paths.get("tmp" + File.separator + "download");
+        final Path destination = sourceFolder.resolve("camel-project");
+
+        // Create a new thread and run the generated camel project with maven commands
+        final MavenUtils mavenUtils = MavenUtils.forProject(destination).forkJvm();
+        final ExecutorService executorService = Executors.newSingleThreadExecutor();
+        executorService.submit(() -> {
+            try {
+                mavenUtils.executeGoals("clean", "package");
+                mavenUtils.executeGoals("spring-boot:run");
+            } catch (VerificationException e) {
+                log.error("Error during running the app");
+                log.error("Error message: ", e);
+            }
+        });
+
+        // Open the web browser to verify the returned code is 200 OK and the generated camel project is correct
+        final String testUrl = "http://localhost:8080/openapi.json";
+        assertThat(Https.doesUrlReturnOK(testUrl).waitFor()).isTrue();
+        Selenide.open(testUrl);
+        $(By.xpath("//pre[contains(text(), 'A brand new API with no content.  Go nuts!')]")).should(com.codeborne.selenide.Condition.exist);
+
+        // Shutdown the thread
+        executorService.shutdown();
     }
 
     @Then("^save API as \"([^\"]*)\" and close editor$")
