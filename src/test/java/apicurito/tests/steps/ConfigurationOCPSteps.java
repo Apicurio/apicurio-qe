@@ -179,6 +179,7 @@ public class ConfigurationOCPSteps {
             .pullSecretName("apicurito-pull-secret")
             .pullSecret(TestConfiguration.apicuritoPullSecret())
             .quayOpsrcToken(TestConfiguration.getQuayOpsrcToken())
+            .icspConfigURL(TestConfiguration.operatorhubIcspScriptURL())
             .build();
         return new OpenShiftService(
             TestConfiguration.getQuayNamespace(),
