@@ -53,6 +53,7 @@ public class TestConfiguration {
     public static final String QUAY_TOKEN = "apicurito.config.quay.auth.token";
     public static final String QUAY_OPSRC_TOKEN = "apicurito.config.quay.opsrc.token";
     public static final String QUAY_PULL_SECRET = "apicurito.config.quay.pull.secret";
+    public static final String OPERATORHUB_ICSP_SCRIPT_URL = "apicurito.config.operatorhub.icsp.url";
 
     private static final TestConfiguration INSTANCE = new TestConfiguration();
 
@@ -212,6 +213,10 @@ public class TestConfiguration {
 
     public static String apicuritoPullSecret() {
         return get().readValue(APICURITO_PULL_SECRET);
+    }
+
+    public static String operatorhubIcspScriptURL() {
+        return get().readValue(OPERATORHUB_ICSP_SCRIPT_URL);
     }
 
     private Properties defaultValues() {
