@@ -144,7 +144,8 @@ public class ConfigurationOCPSteps {
     @When("deploy operator from operatorhub")
     public void deployOperatorHub() {
         log.info("Creating apicurito index.");
-        Opm opm = new Opm();
+        OpenShiftService ocpSvc = getOpenShiftService("fuse-apicurito");
+        Opm opm = new Opm(ocpSvc);
         QuayUser quayUser = new QuayUser(
             TestConfiguration.getQuayUsername(),
             TestConfiguration.getQuayPassword(),
@@ -155,7 +156,6 @@ public class ConfigurationOCPSteps {
         Index index = opm.createIndex("quay.io/marketplace/fuse-apicurito-index:" + ReleaseSpecificParameters.APICURITO_IMAGE_VERSION);
         Bundle apicuritoBundle = index.addBundle(TestConfiguration.apicuritoOperatorMetadataUrl());
         index.push(quayUser);
-        OpenShiftService ocpSvc = getOpenShiftService("fuse-apicurito");
 
         try {
             // OCP stuff - add index
