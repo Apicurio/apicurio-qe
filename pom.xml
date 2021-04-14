@@ -17,7 +17,7 @@
         <log4j.over.slf4j.version>1.7.25</log4j.over.slf4j.version>
         <lombok.version>1.16.18</lombok.version>
         <logback.classic.version>1.2.3</logback.classic.version>
-        <xtf.utilities.version>0.16</xtf.utilities.version>
+        <xtf.utilities.version>0.21</xtf.utilities.version>
         <jackson.version>2.10.3</jackson.version>
         <assertj.version>3.11.1</assertj.version>
         <commons-lang3.version>3.7</commons-lang3.version>
@@ -26,7 +26,7 @@
         <maven.clean.plugin.version>3.0.0</maven.clean.plugin.version>
         <apache.http.commons.version>4.5.3</apache.http.commons.version>
         <guava.version>29.0-jre</guava.version>
-        <openshift.client.version>4.7.1</openshift.client.version>
+        <openshift.client.version>4.13.0</openshift.client.version>
         <failsafe.plugin.version>2.22.0</failsafe.plugin.version>
         <cluecumber.plugin.version>2.5.0</cluecumber.plugin.version>
         <org.json.version>20190722</org.json.version>
@@ -76,6 +76,16 @@
             <groupId>cz.xtf</groupId>
             <artifactId>core</artifactId>
             <version>${xtf.utilities.version}</version>
+            <exclusions>
+                <exclusion>
+                    <groupId>org.junit.jupiter</groupId>
+                    <artifactId>junit-jupiter-api</artifactId>
+                </exclusion>
+                <exclusion>
+                    <groupId>org.junit.jupiter</groupId>
+                    <artifactId>junit-jupiter-engine</artifactId>
+                </exclusion>
+            </exclusions>
         </dependency>
 
         <dependency>
