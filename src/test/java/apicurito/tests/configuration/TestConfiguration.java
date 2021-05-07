@@ -1,13 +1,13 @@
 package apicurito.tests.configuration;
 
-import lombok.extern.slf4j.Slf4j;
-
 import java.io.IOException;
 import java.io.InputStream;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.Properties;
+
+import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
 public class TestConfiguration {
@@ -115,9 +115,9 @@ public class TestConfiguration {
         return get().readValue(APICURITO_OPERATOR_CR_URL);
     }
 
-    public static String apicuritoOperatorDeploymentUrl() {
-        return get().readValue(APICURITO_OPERATOR_DEPLOYMENT_URL);
-    }
+//    public static String apicuritoOperatorDeploymentUrl() {
+//        return get().readValue(APICURITO_OPERATOR_DEPLOYMENT_URL);
+//    }
 
     public static String apicuritoOperatorImageUrl() {
         return get().readValue(APICURITO_OPERATOR_IMAGE_URL);
@@ -147,9 +147,9 @@ public class TestConfiguration {
         return get().readValue(APICURITO_OPERATOR_CLUSTER_ROLE_URL);
     }
 
-    public static String apicuritoOperatorClusterRoleBindingUrl() {
-        return get().readValue(APICURITO_OPERATOR_CLUSTER_ROLE_BINDING_URL);
-    }
+//    public static String apicuritoOperatorClusterRoleBindingUrl() {
+//        return get().readValue(APICURITO_OPERATOR_CLUSTER_ROLE_BINDING_URL);
+//    }
 
     public static String apicuritoUiImageUrl() {
         return get().readValue(APICURITO_UI_IMAGE_URL);
@@ -227,38 +227,38 @@ public class TestConfiguration {
 
         if (props.getProperty(APICURITO_OPERATOR_CRD_URL) == null) {
             props.setProperty(APICURITO_OPERATOR_CRD_URL, String.format(
-                    "https://raw.githubusercontent.com/jboss-fuse/apicurio-operators/master/apicurito/deploy/crds/apicur_v1alpha1_apicurito_crd.yaml"));
+                    "https://raw.githubusercontent.com/jboss-fuse/apicurio-operators/master/apicurito/config/crd/deprecated/apicur.io_apicuritoes.yaml"));
         }
-        if (props.getProperty(APICURITO_OPERATOR_DEPLOYMENT_URL) == null) {
-            props.setProperty(APICURITO_OPERATOR_DEPLOYMENT_URL,
-                    String.format("https://raw.githubusercontent.com/jboss-fuse/apicurio-operators/master/apicurito/deploy/operator.yaml"));
-        }
+//        if (props.getProperty(APICURITO_OPERATOR_DEPLOYMENT_URL) == null) {
+//            props.setProperty(APICURITO_OPERATOR_DEPLOYMENT_URL,
+//                    String.format("https://raw.githubusercontent.com/jboss-fuse/apicurio-operators/master/apicurito/config/manager/deployment.tmpl"));
+//        }
         if (props.getProperty(APICURITO_OPERATOR_CR_URL) == null) {
             props.setProperty(APICURITO_OPERATOR_CR_URL, String.format(
-                    "https://raw.githubusercontent.com/jboss-fuse/apicurio-operators/master/apicurito/deploy/crs/apicur_v1alpha1_apicurito_cr.yaml"));
+                "https://raw.githubusercontent.com/jboss-fuse/apicurio-operators/master/apicurito/config/samples/apicur_v1alpha1_apicurito_cr.yaml"));
         }
         if (props.getProperty(APICURITO_OPERATOR_SERVICE_URL) == null) {
             props.setProperty(APICURITO_OPERATOR_SERVICE_URL,
-                    String.format("https://raw.githubusercontent.com/jboss-fuse/apicurio-operators/master/apicurito/deploy/service_account.yaml"));
+                    String.format("https://raw.githubusercontent.com/jboss-fuse/apicurio-operators/master/apicurito/config/manager/service_account.yaml"));
         }
         if (props.getProperty(APICURITO_OPERATOR_ROLE_URL) == null) {
             props.setProperty(APICURITO_OPERATOR_ROLE_URL,
-                    String.format("https://raw.githubusercontent.com/jboss-fuse/apicurio-operators/master/apicurito/deploy/role.yaml"));
+                    String.format("https://raw.githubusercontent.com/jboss-fuse/apicurio-operators/master/apicurito/config/rbac/role.yaml"));
         }
         if (props.getProperty(APICURITO_OPERATOR_ROLE_BINDING_URL) == null) {
             props.setProperty(APICURITO_OPERATOR_ROLE_BINDING_URL,
-                    String.format("https://raw.githubusercontent.com/jboss-fuse/apicurio-operators/master/apicurito/deploy/role_binding.yaml"));
+                    String.format("https://raw.githubusercontent.com/jboss-fuse/apicurio-operators/master/apicurito/config/rbac/role_binding.yaml"));
         }
 
         if (props.getProperty(APICURITO_OPERATOR_CLUSTER_ROLE_URL) == null) {
             props.setProperty(APICURITO_OPERATOR_CLUSTER_ROLE_URL,
-                    String.format("https://raw.githubusercontent.com/jboss-fuse/apicurio-operators/master/apicurito/deploy/cluster_role.yaml"));
+                    String.format("https://raw.githubusercontent.com/jboss-fuse/apicurio-operators/master/apicurito/config/rbac/cluster_role.yaml"));
         }
-        if (props.getProperty(APICURITO_OPERATOR_CLUSTER_ROLE_BINDING_URL) == null) {
-            props.setProperty(APICURITO_OPERATOR_CLUSTER_ROLE_BINDING_URL,
-                String.format(
-                    "https://raw.githubusercontent.com/jboss-fuse/apicurio-operators/master/apicurito/deploy/cluster_role_binding.yaml"));
-        }
+//        if (props.getProperty(APICURITO_OPERATOR_CLUSTER_ROLE_BINDING_URL) == null) {
+//            props.setProperty(APICURITO_OPERATOR_CLUSTER_ROLE_BINDING_URL,
+//                String.format(
+//                    "https://raw.githubusercontent.com/jboss-fuse/apicurio-operators/master/apicurito/config/rbac/cluster_role_binding.yaml"));
+//        }
 
         props.setProperty(APICURITO_USE_OPERATOR, "true");
 

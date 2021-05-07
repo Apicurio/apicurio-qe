@@ -1,8 +1,9 @@
 package apicurito.tests.configuration.templates;
 
+import java.io.File;
+import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
-import java.net.URL;
 
 import apicurito.tests.configuration.Component;
 import apicurito.tests.configuration.TestConfiguration;
@@ -23,7 +24,7 @@ public class ApicuritoOperator extends ApicuritoInstall {
      * @return Deployment containing the correct image
      */
     public static Deployment getUpdatedOperatorDeployment(String operatorUrl) {
-        try (InputStream is = new URL(TestConfiguration.apicuritoOperatorDeploymentUrl()).openStream()) {
+        try (InputStream is = new FileInputStream("src/test/resources/generatedFiles/deployment.yaml")) {
             Deployment deployment = OpenShiftUtils.getInstance().apps().deployments().load(is).get();
             // containers should contain only one object - get(0)
             deployment.getSpec().getTemplate().getSpec().getContainers().get(0).setImage(operatorUrl);
@@ -39,7 +40,7 @@ public class ApicuritoOperator extends ApicuritoInstall {
         ConfigurationOCPUtils.createInOCP("CRD", TestConfiguration.apicuritoOperatorCrdUrl());
         ConfigurationOCPUtils.createInOCP("Service", TestConfiguration.apicuritoOperatorServiceUrl());
         ConfigurationOCPUtils.createInOCP("Cluster Role", TestConfiguration.apicuritoOperatorClusterRoleUrl());
-        ConfigurationOCPUtils.createInOCP("Cluster Role binding", TestConfiguration.apicuritoOperatorClusterRoleBindingUrl());
+        ConfigurationOCPUtils.createInOCP("Cluster Role binding", new File("src/test/resources/cluster_role_binding.yaml").toString());
         ConfigurationOCPUtils.createInOCP("Role", TestConfiguration.apicuritoOperatorRoleUrl());
         ConfigurationOCPUtils.createInOCP("Role binding", TestConfiguration.apicuritoOperatorRoleBindingUrl());
 
@@ -52,7 +53,7 @@ public class ApicuritoOperator extends ApicuritoInstall {
             OpenShiftUtils.getInstance().apps().deployments().create(getUpdatedOperatorDeployment(TestConfiguration.apicuritoOperatorImageUrl()));
             ConfigurationOCPUtils.setTestEnvToOperator("RELATED_IMAGE_APICURITO_OPERATOR", TestConfiguration.apicuritoOperatorImageUrl());
         } else {
-            ConfigurationOCPUtils.createInOCP("Operator", TestConfiguration.apicuritoOperatorDeploymentUrl());
+            ConfigurationOCPUtils.createInOCP("Operator", new File("src/test/resources/deployment.yaml").toString());
         }
 
         if (TestConfiguration.apicuritoGeneratorImageUrl() != null) {

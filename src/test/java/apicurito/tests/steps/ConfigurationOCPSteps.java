@@ -12,9 +12,10 @@ import io.syndesis.qe.marketplace.quay.QuayUser;
 
 import org.yaml.snakeyaml.Yaml;
 
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.io.IOException;
-import java.net.MalformedURLException;
-import java.net.URL;
+import java.io.InputStream;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -29,7 +30,6 @@ import apicurito.tests.configuration.TestConfiguration;
 import apicurito.tests.configuration.templates.ApicuritoInstall;
 import apicurito.tests.configuration.templates.ApicuritoOperator;
 import apicurito.tests.configuration.templates.ApicuritoTemplate;
-import apicurito.tests.utils.HttpUtils;
 import apicurito.tests.utils.openshift.OpenShiftUtils;
 import apicurito.tests.utils.slenide.ConfigurationOCPUtils;
 import io.cucumber.java.en.Then;
@@ -73,10 +73,10 @@ public class ConfigurationOCPSteps {
     @When("update operator to the new version")
     public void updateOperator() {
         log.info("Update operator to the new version");
-        String deploymentConfig = null;
+        InputStream deploymentConfig = null;
         try {
-            deploymentConfig = HttpUtils.readFileFromURL(new URL(TestConfiguration.apicuritoOperatorDeploymentUrl()));
-        } catch (MalformedURLException e) {
+            deploymentConfig = new FileInputStream("src/test/resources/generatedFiles/deployment.yaml");
+        } catch (FileNotFoundException e) {
             e.printStackTrace();
         }
         Map<String, Object> deployment = new Yaml().load(deploymentConfig);
@@ -261,7 +261,7 @@ public class ConfigurationOCPSteps {
         ConfigurationOCPUtils.createInOCP("CRD", TestConfiguration.apicuritoOperatorCrdUrl());
         ConfigurationOCPUtils.createInOCP("Service", TestConfiguration.apicuritoOperatorServiceUrl());
         ConfigurationOCPUtils.createInOCP("Cluster Role", TestConfiguration.apicuritoOperatorClusterRoleUrl());
-        ConfigurationOCPUtils.createInOCP("Cluster Role binding", TestConfiguration.apicuritoOperatorClusterRoleBindingUrl());
+        //        ConfigurationOCPUtils.createInOCP("Cluster Role binding", TestConfiguration.apicuritoOperatorClusterRoleBindingUrl());
         ConfigurationOCPUtils.createInOCP("Role", TestConfiguration.apicuritoOperatorRoleUrl());
         ConfigurationOCPUtils.createInOCP("Role binding", TestConfiguration.apicuritoOperatorRoleBindingUrl());
 
