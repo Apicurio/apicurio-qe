@@ -48,6 +48,7 @@ public class TestConfiguration {
     public static final String APICURITO_OPERATOR_IMAGE_URL = "apicurito.config.operator.image.url";
     public static final String APICURITO_UI_IMAGE_URL = "apicurito.config.ui.image.url";
     public static final String APICURITO_OPERATOR_METADATA_URL = "apicurito.config.operator.metadata.url";
+    public static final String APICURITO_OPERATOR_PREVIOUS_METADATA_URL = "apicurito.config.operator-prev-version.metadata.url";
     public static final String APICURITO_GENERATOR_IMAGE_URL = "apicurito.config.generator.image.url";
 
     public static final String APICURITO_UI_USERNAME = "apicurito.config.ui.username";
@@ -56,10 +57,11 @@ public class TestConfiguration {
     public static final String QUAY_USERNAME = "apicurito.config.quay.username";
     public static final String QUAY_PASSWORD = "apicurito.config.quay.password";
     public static final String QUAY_NAMESPACE = "apicurito.config.quay.namespace";
-    public static final String QUAY_TOKEN = "apicurito.config.quay.auth.token";
-    public static final String QUAY_OPSRC_TOKEN = "apicurito.config.quay.opsrc.token";
-    public static final String QUAY_PULL_SECRET = "apicurito.config.quay.pull.secret";
     public static final String OPERATORHUB_ICSP_SCRIPT_URL = "apicurito.config.operatorhub.icsp.url";
+    public static final String OPERATORHUB_REGISTRY_NAME = "apicurito.config.operatorhub.registry.name";
+    public static final String OPERATORHUB_REGISTRY_USERNAME = "apicurito.config.operatorhub.registry.username";
+    public static final String OPERATORHUB_REGISTRY_PASSWORD = "apicurito.config.operatorhub.registry.password";
+
 
     private static final TestConfiguration INSTANCE = new TestConfiguration();
 
@@ -133,6 +135,10 @@ public class TestConfiguration {
         return get().readValue(APICURITO_OPERATOR_METADATA_URL);
     }
 
+    public static String apicuritoOperatorPreviousMetadataUrl() {
+        return get().readValue(APICURITO_OPERATOR_PREVIOUS_METADATA_URL);
+    }
+
     public static String apicuritoGeneratorImageUrl() {
         return get().readValue(APICURITO_GENERATOR_IMAGE_URL);
     }
@@ -197,18 +203,6 @@ public class TestConfiguration {
         return get().readValue(QUAY_NAMESPACE);
     }
 
-    public static String getQuayOpsrcToken() {
-        return get().readValue(QUAY_OPSRC_TOKEN);
-    }
-
-    public static String getQuayToken() {
-        return get().readValue(QUAY_TOKEN);
-    }
-
-    public static String getQuayPullSecret() {
-        return get().readValue(QUAY_PULL_SECRET);
-    }
-
     public static String openshiftUsername() {
         return get().readValue(APICURITO_UI_USERNAME);
     }
@@ -223,6 +217,18 @@ public class TestConfiguration {
 
     public static String operatorhubIcspScriptURL() {
         return get().readValue(OPERATORHUB_ICSP_SCRIPT_URL);
+    }
+
+    public static String getOperatorhubRegistryName() {
+        return get().readValue(OPERATORHUB_REGISTRY_NAME);
+    }
+
+    public static String getOperatorhubRegistryUsername() {
+        return get().readValue(OPERATORHUB_REGISTRY_USERNAME);
+    }
+
+    public static String getOperatorhubRegistryPassword() {
+        return get().readValue(OPERATORHUB_REGISTRY_PASSWORD);
     }
 
     private Properties defaultValues() {
