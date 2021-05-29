@@ -40,7 +40,7 @@ public class ApicuritoOperator extends ApicuritoInstall {
         ConfigurationOCPUtils.createInOCP("CRD", TestConfiguration.apicuritoOperatorCrdUrl());
         ConfigurationOCPUtils.createInOCP("Service", TestConfiguration.apicuritoOperatorServiceUrl());
         ConfigurationOCPUtils.createInOCP("Cluster Role", TestConfiguration.apicuritoOperatorClusterRoleUrl());
-        ConfigurationOCPUtils.createInOCP("Cluster Role binding", new File("src/test/resources/cluster_role_binding.yaml").toString());
+        ConfigurationOCPUtils.createInOCP("Cluster Role binding", TestConfiguration.apicuritoOperatorClusterRoleBindingUrl());
         ConfigurationOCPUtils.createInOCP("Role", TestConfiguration.apicuritoOperatorRoleUrl());
         ConfigurationOCPUtils.createInOCP("Role binding", TestConfiguration.apicuritoOperatorRoleBindingUrl());
 
@@ -53,7 +53,7 @@ public class ApicuritoOperator extends ApicuritoInstall {
             OpenShiftUtils.getInstance().apps().deployments().create(getUpdatedOperatorDeployment(TestConfiguration.apicuritoOperatorImageUrl()));
             ConfigurationOCPUtils.setTestEnvToOperator("RELATED_IMAGE_APICURITO_OPERATOR", TestConfiguration.apicuritoOperatorImageUrl());
         } else {
-            ConfigurationOCPUtils.createInOCP("Operator", new File("src/test/resources/deployment.yaml").toString());
+            ConfigurationOCPUtils.createInOCP("Operator", TestConfiguration.apicuritoOperatorDeploymentUrl());
         }
 
         if (TestConfiguration.apicuritoGeneratorImageUrl() != null) {
