@@ -80,10 +80,10 @@ public class CommonVerifications {
         }
     }
 
-    @Then("^check that API \"([^\"]*)\" values \"([^\"]*)\" on page \"([^\"]*)\"$")
-    public void checkThatConsumesProducesHasValuesOnPage(String consumesProduces, String values, String page) {
+    @Then("^check that API \"([^\"]*)\" value \"([^\"]*)\" on page \"([^\"]*)\"$")
+    public void checkThatConsumesProducesHasValueOnPage(String consumesProduces, String value, String page) {
         SelenideElement subsection = CommonUtils.getPageElement(page).$(By.className(consumesProduces));
-        assertThat(subsection.getText()).as("%s should be %s but is %s", consumesProduces, values, subsection.getText()).isEqualTo(values);
+        assertThat(subsection.getText()).as("%s should be %s but is %s", consumesProduces, value, subsection.getText()).contains(value);
     }
 
     @Then("check that {string} created {string} on {string} page with name {string}")
