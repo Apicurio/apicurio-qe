@@ -37,8 +37,8 @@ Feature: Main page tests
     And set consumes or produces "consumes" to "text/xml"
     And save API as "json" and close editor
     And import API "tmp/download/openapi-spec.json"
-    Then check that API "consumes" values "text/xmlapplication/json" on page "main page"
-    #TODO add space and check every label separately
+    Then check that API "consumes" value "text/xml" on page "main page"
+    And check that API "consumes" value "application/json" on page "main page"
 
   @setAPIproduces
   Scenario: set API produces
@@ -46,8 +46,8 @@ Feature: Main page tests
     And set consumes or produces "produces" to "text/xml"
     And save API as "json" and close editor
     And import API "tmp/download/openapi-spec.json"
-    Then check that API "produces" values "text/xmlapplication/json" on page "main page"
-    #TODO add space and check every label separately
+    Then check that API "produces" value "text/xml" on page "main page"
+    And check that API "produces" value "application/json" on page "main page"
 
   @setAPIcontact
   Scenario: set API contact
@@ -141,9 +141,10 @@ Feature: Main page tests
     And check that API name is "MyApi"
     And check that API version is "2.20a"
     And check that API description is "New API desc"
-    And check that API "consumes" values "text/xmlapplication/json" on page "main page"
-    #TODO add space and check every label separately
-    And check that API "produces" values "text/xmlapplication/json" on page "main page"
+    And check that API "consumes" value "text/xml" on page "main page"
+    And check that API "consumes" value "application/json" on page "main page"
+    And check that API "produces" value "text/xml" on page "main page"
+    And check that API "produces" value "application/json" on page "main page"
     And check that API contact info is
       | Ignite test | a@a.com | https://github.com/Apicurio/ |
 
