@@ -1,8 +1,9 @@
 package apicurito.tests.configuration.templates;
 
+import java.io.File;
+import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
-import java.net.URL;
 
 import apicurito.tests.configuration.Component;
 import apicurito.tests.configuration.TestConfiguration;
@@ -23,7 +24,7 @@ public class ApicuritoOperator extends ApicuritoInstall {
      * @return Deployment containing the correct image
      */
     public static Deployment getUpdatedOperatorDeployment(String operatorUrl) {
-        try (InputStream is = new URL(TestConfiguration.apicuritoOperatorDeploymentUrl()).openStream()) {
+        try (InputStream is = new FileInputStream("src/test/resources/generatedFiles/deployment.yaml")) {
             Deployment deployment = OpenShiftUtils.getInstance().apps().deployments().load(is).get();
             // containers should contain only one object - get(0)
             deployment.getSpec().getTemplate().getSpec().getContainers().get(0).setImage(operatorUrl);

@@ -222,4 +222,27 @@ public final class OpenShiftUtils {
                 .done();
         }
     }
+
+    /**
+     * Checks if the OpenShift version is 3.x
+     *
+     * @return true/false
+     */
+    public static boolean isOpenshift3(String openshiftUrl) {
+        if (isMinishift(openshiftUrl)) {
+            return true;
+        }
+        if (isCrc(openshiftUrl)) {
+            return false;
+        }
+        return openshiftUrl.matches("^.*master\\.fo-3.*:8443$");
+    }
+
+    public static boolean isCrc(String openshiftUrl) {
+        return openshiftUrl.matches("^.*api\\.crc.*:6443$");
+    }
+
+    public static boolean isMinishift(String openshiftUrl) {
+        return openshiftUrl.matches("^.*192\\.168\\.\\d{1,3}\\.\\d{1,3}:8443$");
+    }
 }

@@ -22,7 +22,7 @@
         <assertj.version>3.11.1</assertj.version>
         <commons-lang3.version>3.7</commons-lang3.version>
         <selenide.version>5.6.0</selenide.version>
-        <webdriverextensions.version>3.1.3</webdriverextensions.version>
+        <webdrivermanager.version>4.4.3</webdrivermanager.version>
         <maven.clean.plugin.version>3.0.0</maven.clean.plugin.version>
         <apache.http.commons.version>4.5.3</apache.http.commons.version>
         <guava.version>29.0-jre</guava.version>
@@ -30,15 +30,6 @@
         <failsafe.plugin.version>2.22.0</failsafe.plugin.version>
         <cluecumber.plugin.version>2.5.0</cluecumber.plugin.version>
         <org.json.version>20190722</org.json.version>
-
-        <!-- leave driver versions empty to use latest driver -->
-        <!-- Find supported webdriver version for your chrome browser here:
-        http://chromedriver.chromium.org/downloads -->
-        <chrome.driver.version></chrome.driver.version>
-
-        <!-- Find supported webdriver version for your firefox browser here:
-        https://firefox-source-docs.mozilla.org/testing/geckodriver/geckodriver/Support.html -->
-        <firefox.driver.version></firefox.driver.version>
     </properties>
 
     <dependencies>
@@ -168,6 +159,11 @@
             <artifactId>marketplace-utilities</artifactId>
             <version>1.1</version>
         </dependency>
+        <dependency>
+            <groupId>io.github.bonigarcia</groupId>
+            <artifactId>webdrivermanager</artifactId>
+            <version>${webdrivermanager.version}</version>
+        </dependency>
 
     </dependencies>
 
@@ -175,7 +171,7 @@
         <repository>
             <id>bintray-xtf-cz-xtf</id>
             <name>Bintray XTF</name>
-            <url>https://dl.bintray.com/xtf-cz/xtf</url>
+            <url>http://repository.engineering.redhat.com/nexus/content/repositories/jboss-qa-releases/</url>
             <snapshots>
                 <enabled>false</enabled>
             </snapshots>
@@ -198,32 +194,6 @@
                     <compilerArgument>-Werror</compilerArgument>
                 </configuration>
             </plugin>
-
-            <plugin>
-                <groupId>com.github.webdriverextensions</groupId>
-                <artifactId>webdriverextensions-maven-plugin</artifactId>
-                <version>${webdriverextensions.version}</version>
-                <executions>
-                    <execution>
-                        <goals>
-                            <goal>install-drivers</goal>
-                        </goals>
-                    </execution>
-                </executions>
-                <configuration>
-                    <drivers>
-                        <driver>
-                            <name>chromedriver</name>
-                            <version>${chrome.driver.version}</version>
-                        </driver>
-                        <driver>
-                            <name>geckodriver</name>
-                            <version>${firefox.driver.version}</version>
-                        </driver>
-                    </drivers>
-                </configuration>
-            </plugin>
-
             <plugin>
                 <artifactId>maven-clean-plugin</artifactId>
                 <version>${maven.clean.plugin.version}</version>
