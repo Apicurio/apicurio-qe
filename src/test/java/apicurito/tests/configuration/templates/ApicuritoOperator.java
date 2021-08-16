@@ -69,6 +69,6 @@ public class ApicuritoOperator extends ApicuritoInstall {
 
     public static void reinstallApicurito() {
         deploy();
-        waitForApicurito("component", 6, Component.SERVICE);
+        waitForApicurito("component", 3, Component.SERVICE);
     }
 }
