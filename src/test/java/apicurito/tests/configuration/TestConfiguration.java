@@ -1,10 +1,15 @@
 package apicurito.tests.configuration;
 
+import org.apache.commons.io.FileUtils;
+
+import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
+import java.net.URL;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.Map;
 import java.util.Properties;
 
 import apicurito.tests.utils.openshift.OpenShiftUtils;
@@ -237,8 +242,10 @@ public class TestConfiguration {
             }
         }
         if (props.getProperty(APICURITO_OPERATOR_DEPLOYMENT_URL) == null) {
+            downloadDeploymentTemplate();
+            generateDeploymentFile();
             props.setProperty(APICURITO_OPERATOR_DEPLOYMENT_URL,
-                String.format("src/test/resources/generatedFiles/deployment.yaml"));
+                String.format("src/test/resources/generatedFiles/deployment.gen.yaml"));
         }
         if (props.getProperty(APICURITO_OPERATOR_CR_URL) == null) {
             props.setProperty(APICURITO_OPERATOR_CR_URL, String.format(
@@ -280,6 +287,35 @@ public class TestConfiguration {
             System.setProperty("xtf.openshift.version", "4.3");
         }
         return props;
+    }
+
+    private void generateDeploymentFile() {
+        String[] imageAndTag = this.properties.getProperty(APICURITO_OPERATOR_IMAGE_URL, null).split(":");
+        String image = imageAndTag[0];
+        String tag = imageAndTag[1];
+        ProcessBuilder pb = new ProcessBuilder("make");
+        Map<String, String> env = pb.environment();
+        env.put("IMAGE", image);
+        env.put("TAG", tag);
+        pb.directory(new File("src/test/resources/generatedFiles"));
+        try {
+            Process p = pb.start();
+            p.waitFor();
+        } catch (Exception e) {
+            log.debug("Exception", e);
+        }
+    }
+
+    private void downloadDeploymentTemplate() {
+        try {
+            URL url = new URL("https://raw.githubusercontent.com/jboss-fuse/apicurio-operators/master/apicurito/config/manager/deployment.tmpl");
+            File file = new File("src/test/resources/generatedFiles/deployment.tmpl");
+            InputStream input = url.openStream();
+            FileUtils.copyInputStreamToFile(input, file);
+            input.close();
+        } catch (Exception e) {
+            log.debug("Exception", e);
+        }
     }
 
     public String readValue(final String key) {
