@@ -75,7 +75,7 @@ public class ConfigurationOCPSteps {
         log.info("Update operator to the new version");
         InputStream deploymentConfig = null;
         try {
-            deploymentConfig = new FileInputStream("src/test/resources/generatedFiles/deployment.yaml");
+            deploymentConfig = new FileInputStream("src/test/resources/generatedFiles/deployment.gen.yaml");
         } catch (FileNotFoundException e) {
             e.printStackTrace();
         }

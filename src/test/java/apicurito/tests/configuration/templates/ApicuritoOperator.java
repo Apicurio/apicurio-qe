@@ -24,7 +24,7 @@ public class ApicuritoOperator extends ApicuritoInstall {
      * @return Deployment containing the correct image
      */
     public static Deployment getUpdatedOperatorDeployment(String operatorUrl) {
-        try (InputStream is = new FileInputStream("src/test/resources/generatedFiles/deployment.yaml")) {
+        try (InputStream is = new FileInputStream("src/test/resources/generatedFiles/deployment.gen.yaml")) {
             Deployment deployment = OpenShiftUtils.getInstance().apps().deployments().load(is).get();
             // containers should contain only one object - get(0)
             deployment.getSpec().getTemplate().getSpec().getContainers().get(0).setImage(operatorUrl);

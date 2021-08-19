@@ -231,3 +231,6 @@ test.properties
 
 # web drivers downloaded by mvn
 drivers
+/src/test/resources/generatedFiles/deployment.gen.yaml
+/src/test/resources/generatedFiles/deployment.tmpl
+
