@@ -47,8 +47,8 @@ public class MainPageUtils {
         log.info("Getting path with name {}", pathName);
 
         ElementsCollection allPaths = CommonUtils.getAppRoot().$$("div")
-                .filter(attribute("class", "section-body")).first()
-                .findAll(By.cssSelector("div[class*=\"api-path\" ]"));
+            .filter(attribute("class", "section-body")).first()
+            .findAll(By.cssSelector("div[class*=\"api-path\" ]"));
         for (SelenideElement path : allPaths) {
             String actualPathName = path.$$("div").filter(attribute("path-item")).first().getText();
             if (actualPathName.equals(pathName)) {
@@ -63,7 +63,7 @@ public class MainPageUtils {
         log.info("Getting data type with name {}", datatypeName);
 
         return CommonUtils.getAppRoot().$$("section").filter(attribute("label", "Data Types")).first()
-                .$$(By.className("api-definition")).filter(text(datatypeName)).first();
+            .$$(By.className("api-definition")).filter(text(datatypeName)).first();
     }
 
     /**
@@ -85,9 +85,9 @@ public class MainPageUtils {
 
         if (example != null) {
             entityForm.$$("div")
-                    .filter(Condition.attribute("class", "form-group"))
-                    .filter(matchesText("JSON Example"))
-                    .first().$(MainPageElements.TEXT_AREA).sendKeys(example);
+                .filter(Condition.attribute("class", "form-group"))
+                .filter(matchesText("JSON Example"))
+                .first().$(MainPageElements.TEXT_AREA).sendKeys(example);
         }
 
         if (isRest) {

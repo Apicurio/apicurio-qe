@@ -1,9 +1,8 @@
 package apicurito.tests.steps.verification;
 
+import static com.codeborne.selenide.Condition.text;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.fail;
-
-import static com.codeborne.selenide.Condition.text;
 
 import org.openqa.selenium.By;
 
@@ -57,13 +56,13 @@ public class DataTypeVerifications {
 
         DataTypeUtils.openPropertyTypes(property);
         String subjectValue = DataTypeSteps.PROPERTIES_SECTION.$$(DataTypesElements.PROPERTY_ROW)
-                .filter(text(property)).first().$(buttonId).getText();
-        assertThat(subjectValue).as("%s is %s but should be %s for data type property %s",subject, subjectValue, expectedSubjectValue, property).isEqualTo(expectedSubjectValue);
+            .filter(text(property)).first().$(buttonId).getText();
+        assertThat(subjectValue).as("%s is %s but should be %s for data type property %s", subject, subjectValue, expectedSubjectValue, property).isEqualTo(expectedSubjectValue);
     }
 
     @Then("^check that example is (.*)$")
     public void checkThatExampleIsRegEx(String expectedExample) {
         String example = DataTypeUtils.getDataTypesRoot().$(DataTypesElements.EXAMPLE_SECTION).$(By.className("example")).getText();
-        assertThat(example.replaceAll("\\s","")).as("Example should be %s but is %s", expectedExample, example).isEqualTo(expectedExample.replaceAll("\\s",""));
+        assertThat(example.replaceAll("\\s", "")).as("Example should be %s but is %s", expectedExample, example).isEqualTo(expectedExample.replaceAll("\\s", ""));
     }
 }

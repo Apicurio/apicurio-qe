@@ -17,7 +17,6 @@ import io.fabric8.kubernetes.client.KubernetesClientException;
 import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
-
 public class ApicuritoInstall {
 
     public static void cleanNamespace() {

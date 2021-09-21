@@ -1,16 +1,17 @@
 package apicurito.tests.steps;
 
-import apicurito.tests.utils.slenide.CommonUtils;
-import apicurito.tests.utils.slenide.OperationUtils;
-import apicurito.tests.utils.slenide.PathUtils;
-import com.codeborne.selenide.SelenideElement;
-import io.cucumber.java.en.When;
+import static com.codeborne.selenide.Condition.attribute;
+import static com.codeborne.selenide.Condition.enabled;
+import static com.codeborne.selenide.Condition.text;
+import static com.codeborne.selenide.Condition.visible;
+
 import org.openqa.selenium.By;
 
-import static com.codeborne.selenide.Condition.visible;
-import static com.codeborne.selenide.Condition.enabled;
-import static com.codeborne.selenide.Condition.attribute;
-import static com.codeborne.selenide.Condition.text;
+import com.codeborne.selenide.SelenideElement;
+
+import apicurito.tests.utils.slenide.CommonUtils;
+import apicurito.tests.utils.slenide.PathUtils;
+import io.cucumber.java.en.When;
 
 public class PathSteps {
 
@@ -25,13 +26,13 @@ public class PathSteps {
     @When("^create new \"([^\"]*)\" operation$")
     public void createNewOperation(String operation) {
         PathUtils.getCreateOperationButton(Operations.valueOf(operation))
-                .click();
+            .click();
     }
 
     @When("^select operation \"([^\"]*)\"$")
     public void selectOperation(String operation) {
         PathUtils.getOperationButton(Operations.valueOf(operation), CommonUtils.getAppRoot().shouldBe(visible, enabled).shouldNotHave(attribute("disabled")))
-                .click();
+            .click();
     }
 
     /**
@@ -60,7 +61,7 @@ public class PathSteps {
         SelenideElement root = CommonUtils.getPageElement(page);
         PathUtils.openPathTypes(parameter, root);
         SelenideElement parameterElement = root.$(PathElements.PARAMETERS_SECTION).$$(PathElements.PATH_PARAMETERS_ROW)
-                .filter(text(parameter)).first();
+            .filter(text(parameter)).first();
 
         CommonUtils.setDropDownValue(CommonUtils.DropdownButtons.PROPERTY_TYPE.getButtonId(), type, parameterElement);
     }
@@ -70,7 +71,7 @@ public class PathSteps {
         SelenideElement root = CommonUtils.getPageElement(page);
         PathUtils.openPathTypes(parameter, root);
         SelenideElement parameterElement = root.$(PathElements.PARAMETERS_SECTION).$$(PathElements.PATH_PARAMETERS_ROW)
-                .filter(text(parameter)).first();
+            .filter(text(parameter)).first();
 
         CommonUtils.setDropDownValue(CommonUtils.DropdownButtons.PROPERTY_TYPE_OF.getButtonId(), of, parameterElement);
     }
@@ -83,7 +84,7 @@ public class PathSteps {
         SelenideElement root = CommonUtils.getPageElement(page);
         PathUtils.openPathTypes(parameter, root);
         SelenideElement parameterElement = root.$(PathElements.PARAMETERS_SECTION).$$(PathElements.PATH_PARAMETERS_ROW)
-                .filter(text(parameter)).first();
+            .filter(text(parameter)).first();
 
         CommonUtils.setDropDownValue(CommonUtils.DropdownButtons.PROPERTY_TYPE_AS.getButtonId(), as, parameterElement);
     }

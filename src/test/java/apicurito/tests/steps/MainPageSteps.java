@@ -15,8 +15,8 @@ import java.util.List;
 import apicurito.tests.utils.slenide.CommonUtils;
 import apicurito.tests.utils.slenide.MainPageUtils;
 import apicurito.tests.utils.slenide.OperationUtils;
-import io.cucumber.java.en.When;
 import io.cucumber.datatable.DataTable;
+import io.cucumber.java.en.When;
 import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
@@ -56,16 +56,16 @@ public class MainPageSteps {
         for (List<String> dataRow : table.cells()) {
             if (Boolean.valueOf(dataRow.get(1))) {
                 CommonUtils.getClickableLink(CommonUtils.Sections.PATH, CommonUtils.getAppRoot().shouldBe(visible, enabled).shouldNotHave(attribute("disabled")))
-                        .click();
+                    .click();
             } else {
                 CommonUtils.getNewPlusSignButton(CommonUtils.Sections.PATH, CommonUtils.getAppRoot().shouldBe(visible, enabled).shouldNotHave(attribute("disabled")))
-                        .click();
+                    .click();
             }
 
             CommonUtils.getLabelWithName("path", CommonUtils.getAppRoot().shouldBe(visible, enabled).shouldNotHave(attribute("disabled")))
-                    .setValue("/" + dataRow.get(0));
+                .setValue("/" + dataRow.get(0));
             CommonUtils.getButtonWithText("Add", CommonUtils.getAppRoot()).shouldBe(visible, enabled).shouldNotHave(attribute("disabled"))
-                    .click();
+                .click();
         }
     }
 
@@ -82,9 +82,9 @@ public class MainPageSteps {
         se.click();
 
         CommonUtils.getLabelWithName("title-input", CommonUtils.getAppRoot())
-                .setValue(newName);
+            .setValue(newName);
         CommonUtils.getButtonWithTitle("Save changes.", CommonUtils.getAppRoot().$("title-bar"))
-                .click();
+            .click();
     }
 
     @When("^set API version to \"([^\"]*)\"$")
@@ -166,11 +166,11 @@ public class MainPageSteps {
     public void createBasicSecuritySchemeWithValues(DataTable table) {
         for (List<String> dataRow : table.cells()) {
             CommonUtils.getNewPlusSignButton(CommonUtils.Sections.SCHEME, MainPageUtils.getMainPageRoot().$(MainPageElements.SECURITY_SECTION))
-                    .click();
+                .click();
             SelenideElement schemeEditor = MainPageUtils.getMainPageRoot().$(SecurityElements.SECURITY_SCHEME_EDITOR);
 
             CommonUtils.getLabelWithName("schemeName", schemeEditor)
-                    .setValue(dataRow.get(0));
+                .setValue(dataRow.get(0));
 
             if (!dataRow.get(1).isEmpty()) {
                 schemeEditor.$(SecurityElements.DESCRIPTION).setValue(dataRow.get(1));
@@ -179,7 +179,7 @@ public class MainPageSteps {
             CommonUtils.setDropDownValue("button", "BASIC", schemeEditor.$(SecurityElements.DROPDOWN));
 
             CommonUtils.getButtonWithText("Save", schemeEditor)
-                    .click();
+                .click();
         }
     }
 
@@ -187,11 +187,11 @@ public class MainPageSteps {
     public void createAPIKeySecuritySchemeWithValues(DataTable table) {
         for (List<String> dataRow : table.cells()) {
             CommonUtils.getNewPlusSignButton(CommonUtils.Sections.SCHEME, MainPageUtils.getMainPageRoot().$(MainPageElements.SECURITY_SECTION))
-                    .click();
+                .click();
             SelenideElement schemeEditor = MainPageUtils.getMainPageRoot().$(SecurityElements.SECURITY_SCHEME_EDITOR);
 
             CommonUtils.getLabelWithName("schemeName", schemeEditor)
-                    .setValue(dataRow.get(0));
+                .setValue(dataRow.get(0));
 
             if (!dataRow.get(1).isEmpty()) {
                 schemeEditor.$(SecurityElements.DESCRIPTION).setValue(dataRow.get(1));
@@ -204,10 +204,10 @@ public class MainPageSteps {
 
             if (!dataRow.get(3).isEmpty()) {
                 CommonUtils.getLabelWithType("text", schemeEditor.$(SecurityElements.API_KEY_AUTH))
-                        .setValue(dataRow.get(3));
+                    .setValue(dataRow.get(3));
             }
             CommonUtils.getButtonWithText("Save", schemeEditor)
-                    .click();
+                .click();
         }
     }
 
@@ -215,11 +215,11 @@ public class MainPageSteps {
     public void createOAuthSecuritySchemeWithValues(DataTable table) {
         for (List<String> dataRow : table.cells()) {
             CommonUtils.getNewPlusSignButton(CommonUtils.Sections.SCHEME, MainPageUtils.getMainPageRoot().$(MainPageElements.SECURITY_SECTION))
-                    .click();
+                .click();
             SelenideElement schemeEditor = MainPageUtils.getMainPageRoot().$(SecurityElements.SECURITY_SCHEME_EDITOR);
 
             CommonUtils.getLabelWithName("schemeName", schemeEditor)
-                    .setValue(dataRow.get(0));
+                .setValue(dataRow.get(0));
 
             if (!dataRow.get(1).isEmpty()) {
                 schemeEditor.$(SecurityElements.DESCRIPTION).setValue(dataRow.get(1));
@@ -232,22 +232,22 @@ public class MainPageSteps {
 
             if (!dataRow.get(3).isEmpty()) {
                 CommonUtils.getLabelWithName("authorizationUrl", schemeEditor.$(SecurityElements.OAUTH2_AUTH))
-                        .setValue(dataRow.get(3));
+                    .setValue(dataRow.get(3));
             }
 
             if (!dataRow.get(3).isEmpty()) {
                 CommonUtils.getLabelWithName("tokenUrl", schemeEditor.$(SecurityElements.OAUTH2_AUTH))
-                        .setValue(dataRow.get(4));
+                    .setValue(dataRow.get(4));
             }
             CommonUtils.getButtonWithText("Save", schemeEditor)
-                    .click();
+                .click();
         }
     }
 
     @When("^create security requirement with schemes$")
     public void createSecurityRequirementWithSchemes(DataTable table) {
         CommonUtils.getNewPlusSignButton(CommonUtils.Sections.REQUIREMENT, MainPageUtils.getMainPageRoot().$(MainPageElements.REQUIREMENTS_SECTION))
-                .click();
+            .click();
         SelenideElement requirementEditor = MainPageUtils.getMainPageRoot().$(SecurityElements.SECURITY_REQUIREMENT_EDITOR);
 
         for (List<String> dataRow : table.cells()) {
@@ -260,7 +260,7 @@ public class MainPageSteps {
             }
         }
         CommonUtils.getButtonWithText("Save", requirementEditor)
-                .click();
+            .click();
     }
 
     @When("^add scopes to security requirement \"([^\"]*)\" and OAuth scheme \"([^\"]*)\"$")
@@ -276,7 +276,7 @@ public class MainPageSteps {
             scheme.$$(SecurityElements.SCOPE).filter(text(dataRow.get(0))).first().$(SecurityElements.CHECKBOX).click();
         }
         CommonUtils.getButtonWithText("Save", requirementEditor)
-                .click();
+            .click();
     }
 
     @When("^add scopes to scheme \"([^\"]*)\"$")
@@ -294,7 +294,7 @@ public class MainPageSteps {
             CommonUtils.setValueInLabel(dataRow.get(1), scopeElements.get(scopeElements.size() - 1).$(By.className("scope-description")), false);
         }
         CommonUtils.getButtonWithText("Save", schemeEditor)
-                .click();
+            .click();
     }
 
     /**

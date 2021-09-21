@@ -32,7 +32,6 @@ import apicurito.tests.configuration.templates.ApicuritoOperator;
 import apicurito.tests.configuration.templates.ApicuritoTemplate;
 import apicurito.tests.utils.openshift.OpenShiftUtils;
 import apicurito.tests.utils.slenide.ConfigurationOCPUtils;
-import io.cucumber.java.en.Given;
 import io.cucumber.java.en.Then;
 import io.cucumber.java.en.When;
 import io.fabric8.kubernetes.api.model.Pod;
@@ -69,7 +68,7 @@ public class ConfigurationOCPSteps {
 
         log.info("Waiting for Apicurito pods");
         if ("first".equals(sequenceNumber)) {
-            ApicuritoInstall.waitForApicurito("component", 4, Component.SERVICE);
+            ApicuritoInstall.waitForApicurito("component", 2, Component.SERVICE);
         } else {
             ConfigurationOCPUtils.waitForRollout();
         }
@@ -108,12 +107,12 @@ public class ConfigurationOCPSteps {
             ConfigurationOCPUtils.setTestEnvToOperator("RELATED_IMAGE_APICURITO",
                 TestConfiguration.apicuritoUiImageUrl());
         }
-        ConfigurationOCPUtils.waitForOperatorUpdate(3);
+        ConfigurationOCPUtils.waitForOperatorUpdate(1);
     }
 
     /**
      * @param podType operator || image
-     * @param value pod image
+     * @param value   pod image
      */
     @When("check that apicurito {string} is {string}")
     public void checkThatApicuritoImageIs(String podType, String value) {
@@ -141,12 +140,14 @@ public class ConfigurationOCPSteps {
     @Then("check that apicurito operator is deployed and in running state")
     public void checkThatApicuritoOperatorIsDeployedAndInRunningState() {
         log.info("Checking that operator is deployed and in running state");
-        OpenShiftUtils.xtf().waiters();
-        OpenShiftUtils.xtf().waiters().areExactlyNPodsReady(1, "name", "fuse-apicurito").interval(TimeUnit.SECONDS, 2)
-            .timeout(TimeUnit.MINUTES, 3).waitFor();
+        OpenShiftUtils.xtf().waiters()
+            .areExactlyNPodsReady(1, "name", "fuse-apicurito")
+            .interval(TimeUnit.SECONDS, 2)
+            .timeout(TimeUnit.MINUTES, 3)
+            .waitFor();
     }
 
-    @Given("setup operatorhub on cluster")
+    @When("setup operatorhub on cluster")
     public void setupOperatorhub() {
         if (index == null) {
             log.info("Creating apicurito index.");
@@ -170,17 +171,17 @@ public class ConfigurationOCPSteps {
     @When("deploy operator from operatorhub")
     public void deployOperatorHub() {
         try {
-            log.info("Creating apcurito subscription");
+            log.info("Creating apicurito subscription");
             currentBundle.createSubscription();
         } catch (IOException e) {
             e.printStackTrace();
         }
     }
 
-    @When("deploy old operator from operatorhub")
-    public void deployOldOperatorHub() {
+    @When("deploy older operator from operatorhub")
+    public void deployOlderOperatorHub() {
         try {
-            log.info("Creating apcurito subscription");
+            log.info("Creating apicurito subscription");
             oldBundle.createSubscription();
         } catch (IOException e) {
             e.printStackTrace();
@@ -189,24 +190,18 @@ public class ConfigurationOCPSteps {
 
     @When("upgrade operator via operatorhub")
     public void upgradeOperatorhub() {
-        try {
-            oldBundle.createSubscription();
-            checkThatApicuritoOperatorIsDeployedAndInRunningState();
-            oldBundle.update(currentBundle, true);
-            ConfigurationOCPUtils.waitForOperatorUpdate(3);
-        } catch (IOException ioException) {
-            ioException.printStackTrace();
+        log.info("Upgrading apicurito subscription");
+        oldBundle.update(currentBundle, true);
+        ConfigurationOCPUtils.waitForOperatorUpdate(3);
+    }
+
+    @Then("check that all deployed pods have (newer|older) version$")
+    public void checkThatPodsHaveVersion(String version) {
+        if ("older".equals(version)) {
+            ConfigurationOCPUtils.checkPodsVersion(ReleaseSpecificParameters.APICURITO_PREVIOUS_VERSION);
+        } else {
+            ConfigurationOCPUtils.checkPodsVersion(ReleaseSpecificParameters.APICURITO_CURRENT_VERSION);
         }
-    }
-
-    @Then("check that pods have old version")
-    public void checkThatPodsHaveOldVersion() {
-        ConfigurationOCPUtils.checkPodsVersion(ReleaseSpecificParameters.APICURITO_PREVIOUS_VERSION);
-    }
-
-    @Then("check that pods are updated")
-    public void checkThatPodsAreUpdated() {
-        ConfigurationOCPUtils.checkPodsVersion(ReleaseSpecificParameters.APICURITO_CURRENT_VERSION);
     }
 
     @When("delete running instance of apicurito")
@@ -293,11 +288,14 @@ public class ConfigurationOCPSteps {
 
         OpenShiftUtils.getInstance().apps().deployments()
             .create(ApicuritoOperator.getUpdatedOperatorDeployment(ReleaseSpecificParameters.OLD_OPERATOR_URL));
+
         ConfigurationOCPUtils.setTestEnvToOperator("RELATED_IMAGE_APICURITO_OPERATOR",
             ReleaseSpecificParameters.OLD_OPERATOR_URL);
-        ConfigurationOCPUtils.applyInOCP("Custom Resource", TestConfiguration.apicuritoOperatorCrUrl());
 
-        ApicuritoTemplate.waitForApicurito("component", 2, Component.SERVICE);
+        ConfigurationOCPUtils.applyInOCP("Custom Resource",
+            "https://gist.githubusercontent.com/mmajerni/7365800673a3014d6da8773650377d6c/raw/42811ef45986795a8fa3466ad384c9e172057e70/cr_1_pod.yaml");
+
+        ConfigurationOCPUtils.waitForOneReplicaSet();
     }
 
     private static OpenShiftService getOpenShiftService() {

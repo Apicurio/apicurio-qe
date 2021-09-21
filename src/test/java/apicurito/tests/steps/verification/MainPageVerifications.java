@@ -1,11 +1,10 @@
 package apicurito.tests.steps.verification;
 
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.assertj.core.api.Assertions.fail;
-
 import static com.codeborne.selenide.Condition.attribute;
 import static com.codeborne.selenide.Condition.exactText;
 import static com.codeborne.selenide.Condition.text;
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.fail;
 
 import org.openqa.selenium.By;
 
@@ -15,8 +14,8 @@ import java.util.List;
 
 import apicurito.tests.utils.slenide.CommonUtils;
 import apicurito.tests.utils.slenide.MainPageUtils;
-import io.cucumber.java.en.Then;
 import io.cucumber.datatable.DataTable;
+import io.cucumber.java.en.Then;
 
 public class MainPageVerifications {
 
@@ -110,7 +109,7 @@ public class MainPageVerifications {
         CommonUtils.sleepFor(1); //need to wait at least for a second because of Stale Element Reference Exception
 
         ElementsCollection paths = MainPageUtils.getMainPageRoot().$$(MainPageElements.SECTION).filter(attribute("label", "Paths")).first()
-                .$$(By.className("api-path")).filter(exactText(expectedPathName));
+            .$$(By.className("api-path")).filter(exactText(expectedPathName));
 
         if ("is".equals(isCreated)) {
             assertThat(paths.size()).as("Path %s is not created (should be)", expectedPathName).isEqualTo(1);
@@ -126,7 +125,7 @@ public class MainPageVerifications {
     @Then("^check that data type \"([^\"]*)\" \"([^\"]*)\" created$")
     public void checkThatDataTypeIsCreated(String datatype, String isCreated) {
         ElementsCollection types = MainPageUtils.getMainPageRoot().$$(MainPageElements.SECTION).filter(attribute("label", "Data Types")).first()
-                .$$(By.className("api-definition")).filter(exactText(datatype));
+            .$$(By.className("api-definition")).filter(exactText(datatype));
         if ("is".equals(isCreated)) {
             assertThat(types.size()).as("Data type %s is not created! (should be)", datatype).isEqualTo(1);
         } else {
@@ -135,13 +134,13 @@ public class MainPageVerifications {
     }
 
     /**
-     * @param response expected name of data type
+     * @param response  expected name of data type
      * @param isCreated [ is | is not ] is for cheack that path exists, is not otherwise
      */
     @Then("^check that response \"([^\"]*)\" \"([^\"]*)\" created$")
     public void checkThatResponseIsCreated(String response, String isCreated) {
         ElementsCollection responses = MainPageUtils.getMainPageRoot().$$(MainPageElements.SECTION).filter(attribute("label", "Responses")).first()
-                .$$(By.className("api-response")).filter(exactText(response));
+            .$$(By.className("api-response")).filter(exactText(response));
         if ("is".equals(isCreated)) {
             assertThat(responses.size()).as("Response %s is not created! (should be)", response).isEqualTo(1);
         } else {

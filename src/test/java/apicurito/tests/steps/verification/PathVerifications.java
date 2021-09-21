@@ -1,17 +1,19 @@
 package apicurito.tests.steps.verification;
 
-import apicurito.tests.utils.slenide.CommonUtils;
-import apicurito.tests.utils.slenide.MainPageUtils;
-import apicurito.tests.utils.slenide.PathUtils;
-import com.codeborne.selenide.ElementsCollection;
-import com.codeborne.selenide.SelenideElement;
-import io.cucumber.java.en.Then;
-import org.openqa.selenium.By;
-
 import static com.codeborne.selenide.Condition.matchText;
 import static com.codeborne.selenide.Condition.text;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.fail;
+
+import org.openqa.selenium.By;
+
+import com.codeborne.selenide.ElementsCollection;
+import com.codeborne.selenide.SelenideElement;
+
+import apicurito.tests.utils.slenide.CommonUtils;
+import apicurito.tests.utils.slenide.MainPageUtils;
+import apicurito.tests.utils.slenide.PathUtils;
+import io.cucumber.java.en.Then;
 
 public class PathVerifications {
 
@@ -40,7 +42,7 @@ public class PathVerifications {
     @Then("^check that path parameter \"([^\"]*)\" on \"([^\"]*)\" page has description \"([^\"]*)\"$")
     public void checkThatPathParameterHasDescription(String parameter, String page, String description) {
         SelenideElement descriptionElement = CommonUtils.getPageElement(page).$(PathElements.PATH_PARAMETERS_SECTION).$$(PathElements.PATH_PARAMETERS_ROW)
-                .filter(matchText(parameter)).first().$(By.className("description"));
+            .filter(matchText(parameter)).first().$(By.className("description"));
 
         assertThat(descriptionElement.getText()).as("Description for path parameter %s is different", parameter).isEqualTo(description);
     }
@@ -51,13 +53,13 @@ public class PathVerifications {
     @Then("^check that path parameter \"([^\"]*)\" on \"([^\"]*)\" page has \"([^\"]*)\" type with value \"([^\"]*)\"$")
     public void checkThatPathParameterHasTypeAs(String parameter, String page, String type, String expectedAs) {
         SelenideElement root = CommonUtils.getPageElement(page);
-        PathUtils.openPathTypes(parameter,root);
+        PathUtils.openPathTypes(parameter, root);
         String as = root.$(PathElements.PATH_PARAMETERS_SECTION).$$(PathElements.PATH_PARAMETERS_ROW)
-                .filter(text(parameter)).first().$(CommonUtils.getButtonId(type)).getText();
+            .filter(text(parameter)).first().$(CommonUtils.getButtonId(type)).getText();
         assertThat(as).as("%s is %s but should be %s", type, as, expectedAs).isEqualTo(expectedAs);
     }
 
-    private void checkThatPathIsCreatedAndSelectIt(String path){
+    private void checkThatPathIsCreatedAndSelectIt(String path) {
         SelenideElement pathElement = MainPageUtils.getPathWithName(path);
         if (pathElement == null) {
             fail("Operation is not created because path %s is not found.", path);

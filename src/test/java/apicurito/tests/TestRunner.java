@@ -8,7 +8,6 @@ import com.codeborne.selenide.Configuration;
 
 import apicurito.tests.configuration.TestConfiguration;
 import apicurito.tests.configuration.templates.ApicuritoInstall;
-import apicurito.tests.configuration.templates.ApicuritoTemplate;
 import apicurito.tests.utils.openshift.OpenShiftUtils;
 import apicurito.tests.utils.slenide.CommonUtils;
 import io.cucumber.junit.Cucumber;

@@ -1,7 +1,5 @@
 package apicurito.tests.steps;
 
-import static org.assertj.core.api.Assertions.assertThat;
-
 import static com.codeborne.selenide.Condition.attribute;
 import static com.codeborne.selenide.Condition.cssClass;
 import static com.codeborne.selenide.Condition.enabled;
@@ -9,6 +7,7 @@ import static com.codeborne.selenide.Condition.text;
 import static com.codeborne.selenide.Condition.visible;
 import static com.codeborne.selenide.Selenide.$;
 import static com.codeborne.selenide.Selenide.$$;
+import static org.assertj.core.api.Assertions.assertThat;
 
 import org.assertj.core.api.Condition;
 import org.openqa.selenium.By;

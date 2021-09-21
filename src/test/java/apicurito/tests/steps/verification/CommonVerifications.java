@@ -1,24 +1,21 @@
 package apicurito.tests.steps.verification;
 
-import apicurito.tests.utils.slenide.CommonUtils;
-import apicurito.tests.utils.slenide.MainPageUtils;
-import apicurito.tests.utils.slenide.OperationUtils;
-import apicurito.tests.utils.slenide.PathUtils;
-import com.codeborne.selenide.Condition;
-import com.codeborne.selenide.ElementsCollection;
-import com.codeborne.selenide.SelenideElement;
-import io.cucumber.java.en.And;
-import io.cucumber.java.en.Then;
-import io.cucumber.datatable.DataTable;
-import org.openqa.selenium.By;
-
-import javax.xml.crypto.Data;
-import java.util.List;
-
-import static com.codeborne.selenide.Condition.*;
-import static com.codeborne.selenide.Condition.visible;
+import static com.codeborne.selenide.Condition.text;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.fail;
+
+import org.openqa.selenium.By;
+
+import com.codeborne.selenide.ElementsCollection;
+import com.codeborne.selenide.SelenideElement;
+
+import java.util.List;
+
+import apicurito.tests.utils.slenide.CommonUtils;
+import apicurito.tests.utils.slenide.OperationUtils;
+import apicurito.tests.utils.slenide.PathUtils;
+import io.cucumber.datatable.DataTable;
+import io.cucumber.java.en.Then;
 
 public class CommonVerifications {
 
@@ -129,8 +126,8 @@ public class CommonVerifications {
                 if (!dataRow.get(2).isEmpty()) {
                     String isRequired = row.$(By.className("param-required")).$("drop-down").getText();
                     assertThat(isRequired)
-                            .as("%s should be %s but is %s", message, dataRow.get(2), isRequired)
-                            .isEqualTo(dataRow.get(2));
+                        .as("%s should be %s but is %s", message, dataRow.get(2), isRequired)
+                        .isEqualTo(dataRow.get(2));
                 }
 
                 if (!dataRow.get(3).isEmpty()) {

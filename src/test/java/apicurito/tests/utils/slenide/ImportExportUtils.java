@@ -1,12 +1,12 @@
 package apicurito.tests.utils.slenide;
 
-import apicurito.tests.configuration.CustomWebDriverProvider;
-import lombok.extern.slf4j.Slf4j;
+import static com.codeborne.selenide.Condition.attribute;
+import static com.codeborne.selenide.Condition.text;
 
 import java.io.File;
 
-import static com.codeborne.selenide.Condition.attribute;
-import static com.codeborne.selenide.Condition.text;
+import apicurito.tests.configuration.CustomWebDriverProvider;
+import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
 public class ImportExportUtils {
@@ -14,7 +14,7 @@ public class ImportExportUtils {
     public static File exportAPIUtil(String format) {
 
         CommonUtils.getAppRoot().$$("button")
-                .filter(attribute("class", "btn btn-lg btn-primary dropdown-toggle btn-save")).first().click();
+            .filter(attribute("class", "btn btn-lg btn-primary dropdown-toggle btn-save")).first().click();
         CommonUtils.getAppRoot().$$("a").filter(text("Save as " + format.toUpperCase())).first().click();
 
         String filePath = CustomWebDriverProvider.DOWNLOAD_DIR + File.separator + "openapi-spec." + format.toLowerCase();

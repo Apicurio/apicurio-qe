@@ -12,7 +12,6 @@ import java.nio.file.Paths;
 import java.util.Map;
 import java.util.Properties;
 
-import apicurito.tests.utils.openshift.OpenShiftUtils;
 import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
@@ -232,14 +231,9 @@ public class TestConfiguration {
         props.setProperty(OPENSHIFT_TOKEN, "");
 
         if (props.getProperty(APICURITO_OPERATOR_CRD_URL) == null) {
-            if (OpenShiftUtils.isOpenshift3(readValue(OPENSHIFT_URL))) {
-                props.setProperty(APICURITO_OPERATOR_CRD_URL, String.format(
-                    "https://raw.githubusercontent.com/jboss-fuse/apicurio-operators/master/apicurito/config/crd/deprecated/apicur.io_apicuritoes" +
-                        ".yaml"));
-            } else {
-                props.setProperty(APICURITO_OPERATOR_CRD_URL, String.format(
-                    "https://raw.githubusercontent.com/jboss-fuse/apicurio-operators/master/apicurito/config/crd/bases/apicur.io_apicuritoes.yaml"));
-            }
+            props.setProperty(APICURITO_OPERATOR_CRD_URL, String.format(
+                "https://raw.githubusercontent.com/jboss-fuse/apicurio-operators/master/apicurito/config/crd/bases/apicur.io_apicuritoes.yaml"));
+
         }
         if (props.getProperty(APICURITO_OPERATOR_DEPLOYMENT_URL) == null) {
             downloadDeploymentTemplate();
