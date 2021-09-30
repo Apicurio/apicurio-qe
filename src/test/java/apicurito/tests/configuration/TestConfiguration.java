@@ -48,7 +48,6 @@ public class TestConfiguration {
     public static final String APICURITO_OPERATOR_IMAGE_URL = "apicurito.config.operator.image.url";
     public static final String APICURITO_UI_IMAGE_URL = "apicurito.config.ui.image.url";
     public static final String APICURITO_OPERATOR_METADATA_URL = "apicurito.config.operator.metadata.url";
-    public static final String APICURITO_OPERATOR_PREVIOUS_METADATA_URL = "apicurito.config.operator-prev-version.metadata.url";
     public static final String APICURITO_GENERATOR_IMAGE_URL = "apicurito.config.generator.image.url";
 
     public static final String APICURITO_UI_USERNAME = "apicurito.config.ui.username";
@@ -61,7 +60,6 @@ public class TestConfiguration {
     public static final String OPERATORHUB_REGISTRY_NAME = "apicurito.config.operatorhub.registry.name";
     public static final String OPERATORHUB_REGISTRY_USERNAME = "apicurito.config.operatorhub.registry.username";
     public static final String OPERATORHUB_REGISTRY_PASSWORD = "apicurito.config.operatorhub.registry.password";
-
 
     private static final TestConfiguration INSTANCE = new TestConfiguration();
 
@@ -133,10 +131,6 @@ public class TestConfiguration {
 
     public static String apicuritoOperatorMetadataUrl() {
         return get().readValue(APICURITO_OPERATOR_METADATA_URL);
-    }
-
-    public static String apicuritoOperatorPreviousMetadataUrl() {
-        return get().readValue(APICURITO_OPERATOR_PREVIOUS_METADATA_URL);
     }
 
     public static String apicuritoGeneratorImageUrl() {
