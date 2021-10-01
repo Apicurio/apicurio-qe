@@ -69,7 +69,7 @@ public class ConfigurationOCPSteps {
 
         log.info("Waiting for Apicurito pods");
         if ("first".equals(sequenceNumber)) {
-            ApicuritoInstall.waitForApicurito("component", 4, Component.SERVICE);
+            ApicuritoInstall.waitForApicurito("component", 2, Component.SERVICE);
         } else {
             ConfigurationOCPUtils.waitForRollout();
         }
@@ -189,14 +189,8 @@ public class ConfigurationOCPSteps {
 
     @When("upgrade operator via operatorhub")
     public void upgradeOperatorhub() {
-        try {
-            oldBundle.createSubscription();
-            checkThatApicuritoOperatorIsDeployedAndInRunningState();
             oldBundle.update(currentBundle, true);
             ConfigurationOCPUtils.waitForOperatorUpdate(3);
-        } catch (IOException ioException) {
-            ioException.printStackTrace();
-        }
     }
 
     @Then("check that pods have old version")
