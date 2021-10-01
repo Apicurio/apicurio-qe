@@ -56,10 +56,10 @@ public class TestConfiguration {
     public static final String QUAY_USERNAME = "apicurito.config.quay.username";
     public static final String QUAY_PASSWORD = "apicurito.config.quay.password";
     public static final String QUAY_NAMESPACE = "apicurito.config.quay.namespace";
-    public static final String QUAY_TOKEN = "apicurito.config.quay.auth.token";
-    public static final String QUAY_OPSRC_TOKEN = "apicurito.config.quay.opsrc.token";
-    public static final String QUAY_PULL_SECRET = "apicurito.config.quay.pull.secret";
     public static final String OPERATORHUB_ICSP_SCRIPT_URL = "apicurito.config.operatorhub.icsp.url";
+    public static final String OPERATORHUB_REGISTRY_NAME = "apicurito.config.operatorhub.registry.name";
+    public static final String OPERATORHUB_REGISTRY_USERNAME = "apicurito.config.operatorhub.registry.username";
+    public static final String OPERATORHUB_REGISTRY_PASSWORD = "apicurito.config.operatorhub.registry.password";
 
     private static final TestConfiguration INSTANCE = new TestConfiguration();
 
@@ -197,18 +197,6 @@ public class TestConfiguration {
         return get().readValue(QUAY_NAMESPACE);
     }
 
-    public static String getQuayOpsrcToken() {
-        return get().readValue(QUAY_OPSRC_TOKEN);
-    }
-
-    public static String getQuayToken() {
-        return get().readValue(QUAY_TOKEN);
-    }
-
-    public static String getQuayPullSecret() {
-        return get().readValue(QUAY_PULL_SECRET);
-    }
-
     public static String openshiftUsername() {
         return get().readValue(APICURITO_UI_USERNAME);
     }
@@ -223,6 +211,18 @@ public class TestConfiguration {
 
     public static String operatorhubIcspScriptURL() {
         return get().readValue(OPERATORHUB_ICSP_SCRIPT_URL);
+    }
+
+    public static String getOperatorhubRegistryName() {
+        return get().readValue(OPERATORHUB_REGISTRY_NAME);
+    }
+
+    public static String getOperatorhubRegistryUsername() {
+        return get().readValue(OPERATORHUB_REGISTRY_USERNAME);
+    }
+
+    public static String getOperatorhubRegistryPassword() {
+        return get().readValue(OPERATORHUB_REGISTRY_PASSWORD);
     }
 
     private Properties defaultValues() {
