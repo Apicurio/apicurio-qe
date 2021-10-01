@@ -30,6 +30,7 @@ Feature: OperatorHub installation test
     And delete running instance of apicurito
     Then reinstall apicurito
 
+  #should not working for upgrade 7.8 --> 7.9 (expected)
   @operatorhub-upgrade
   Scenario: test operatorhub upgrade
     Given clean openshift after operatorhub test
