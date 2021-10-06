@@ -1,30 +1,33 @@
 package apicurito.tests.utils.slenide;
 
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.fail;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 import apicurito.tests.configuration.Component;
 import apicurito.tests.configuration.TestConfiguration;
 import apicurito.tests.utils.openshift.OpenShiftUtils;
+import io.fabric8.kubernetes.api.model.Pod;
 import io.fabric8.kubernetes.api.model.apps.ReplicaSet;
 import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
 public class ConfigurationOCPUtils {
 
-    public static void waitForOperatorUpdate() {
+    public static void waitForOperatorUpdate(int numberOfPods) {
         log.info("Waiting for 2 created replica sets");
         //Wait for 2 minutes for replica sets
         if (!areTwoReplicaSetsAvailable()) {
             fail("TIMEOUT 2 minutes : Failed to load 2 replica sets");
         }
 
-        log.info("Waiting for exactly 1 running Apicurito UI pod.");
-        //Wait 3 minutes for 1 running pods
-        if (!areExactlyOneUiPodRunning()) {
-            fail("TIMEOUT 3 minutes: Failed to load 1 running Apicurito pod");
+        log.info("Waiting for exactly" + numberOfPods + " running Apicurito UI pod.");
+        //Wait 3 minutes for n running pods
+        if (!areExactlyNUiPodsRunning(numberOfPods)) {
+            fail("TIMEOUT 3 minutes: Failed to load " + numberOfPods + " running Apicurito pods.");
         }
     }
 
@@ -72,6 +75,20 @@ public class ConfigurationOCPUtils {
         );
     }
 
+    public static void checkPodsVersion(String version) {
+        List<Pod> pods = OpenShiftUtils.getInstance().getPods();
+        for (Pod p : pods) {
+            if (p.getStatus().getPhase().contains("Running")) {
+                Map<String, String> labels = p.getMetadata().getLabels();
+                assertThat(labels).containsKey("rht.prod_ver");
+                assertThat(labels).containsKey("rht.comp_ver");
+
+                assertThat(labels.get("rht.prod_ver")).isEqualTo(version);
+                assertThat(labels.get("rht.comp_ver")).isEqualTo(version);
+            }
+        }
+    }
+
     private static List<ReplicaSet> getApicuritoUIreplicaSets() {
         List<ReplicaSet> uiRs = new ArrayList<>();
 
@@ -97,7 +114,7 @@ public class ConfigurationOCPUtils {
         return false;
     }
 
-    private static boolean areExactlyOneUiPodRunning() {
+    private static boolean areExactlyNUiPodsRunning(int numberOfPods) {
         List<ReplicaSet> uiRs = new ArrayList<>();
         int counter = 0;
 
@@ -106,7 +123,7 @@ public class ConfigurationOCPUtils {
             uiRs = getApicuritoUIreplicaSets();
             CommonUtils.sleepFor(10);
 
-            if (uiRs.get(0).getStatus().getReplicas() + uiRs.get(1).getStatus().getReplicas() == 1) {
+            if (uiRs.get(0).getStatus().getReplicas() + uiRs.get(1).getStatus().getReplicas() == numberOfPods) {
                 return true;
             }
             ++counter;
