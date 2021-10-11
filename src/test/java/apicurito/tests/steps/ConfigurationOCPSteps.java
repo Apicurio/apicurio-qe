@@ -43,6 +43,7 @@ public class ConfigurationOCPSteps {
 
     private Bundle currentBundle, oldBundle;
     private Index index;
+    private String csv;
 
     @When("^check that \"([^\"]*)\" has \"([^\"]*)\" pods$")
     public void checkThatComponentHasPods(Component component, int count) {
@@ -159,6 +160,7 @@ public class ConfigurationOCPSteps {
                 quayUser);
             currentBundle = index.addBundle(TestConfiguration.apicuritoOperatorMetadataUrl());
             oldBundle = index.addBundle(ReleaseSpecificParameters.APICURITO_OPERATOR_PREVIOUS_METADATA_URL);
+            csv = currentBundle.getCSVName();
             try {
                 index.addIndexToCluster("apicurito-test-catalog");
             } catch (InterruptedException | TimeoutException | IOException e) {
@@ -216,7 +218,6 @@ public class ConfigurationOCPSteps {
 
     @Then("clean openshift after operatorhub test")
     public void cleanOpenshiftAfterOperatorhubTest() {
-        String csv = "fuse-apicurito.v" + ReleaseSpecificParameters.APICURITO_CURRENT_VERSION + ".0";
         OpenShiftUtils.binary().execute("delete", "csv", csv);
         OpenShiftUtils.binary().execute("delete", "subscription", "fuse-apicurito");
         if (TestConfiguration.namespaceCleanupAfter()) {
@@ -266,9 +267,7 @@ public class ConfigurationOCPSteps {
 
     @Then("check that name and image of operator in operatorhub are correct")
     public void checkThatNameAndImageOfOperatorInOperatorhubAreCorrect() {
-        String csvName = "fuse-apicurito.v"
-            + ReleaseSpecificParameters.APICURITO_CURRENT_VERSION + ".0";
-        final String output = OpenShiftUtils.binary().execute("describe", "csv", csvName, "-n",
+        final String output = OpenShiftUtils.binary().execute("describe", "csv", csv, "-n",
             TestConfiguration.openShiftNamespace());
         assertThat(output).contains("Display Name:  API Designer");
         assertThat(output).contains("PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAxMD");
