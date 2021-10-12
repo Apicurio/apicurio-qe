@@ -12,7 +12,7 @@ import io.cucumber.java.en.When;
 public class DataTypeSteps {
 
     public static SelenideElement PROPERTIES_SECTION = DataTypeUtils.getDataTypesRoot().$$("section")
-            .filter(Condition.attribute("label", "PROPERTIES")).first();
+        .filter(Condition.attribute("label", "PROPERTIES")).first();
 
     private static class DataTypesElements {
         private static By INFO_SECTION = By.cssSelector("definition-info-section");

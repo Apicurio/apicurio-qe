@@ -15,7 +15,7 @@
         <maven.compiler.version>3.5</maven.compiler.version>
         <org.slfj.version>1.7.6</org.slfj.version>
         <log4j.over.slf4j.version>1.7.25</log4j.over.slf4j.version>
-        <lombok.version>1.16.18</lombok.version>
+        <lombok.version>1.18.20</lombok.version>
         <logback.classic.version>1.2.3</logback.classic.version>
         <xtf.utilities.version>0.23</xtf.utilities.version>
         <jackson.version>2.10.3</jackson.version>
@@ -24,12 +24,13 @@
         <selenide.version>5.6.0</selenide.version>
         <webdrivermanager.version>5.0.1</webdrivermanager.version>
         <maven.clean.plugin.version>3.0.0</maven.clean.plugin.version>
-        <apache.http.commons.version>4.5.3</apache.http.commons.version>
+        <apache.http.commons.version>4.5.13</apache.http.commons.version>
         <guava.version>29.0-jre</guava.version>
         <openshift.client.version>4.13.0</openshift.client.version>
         <failsafe.plugin.version>2.22.0</failsafe.plugin.version>
         <cluecumber.plugin.version>2.5.0</cluecumber.plugin.version>
         <org.json.version>20190722</org.json.version>
+        <marketplace.utilities.version>1.2</marketplace.utilities.version>
     </properties>
 
     <dependencies>
@@ -138,16 +139,19 @@
             <artifactId>jackson-module-parameter-names</artifactId>
             <version>${jackson.version}</version>
         </dependency>
+
         <dependency>
             <groupId>com.fasterxml.jackson.datatype</groupId>
             <artifactId>jackson-datatype-jsr310</artifactId>
             <version>${jackson.version}</version>
         </dependency>
+
         <dependency>
             <groupId>com.fasterxml.jackson.datatype</groupId>
             <artifactId>jackson-datatype-jdk8</artifactId>
             <version>${jackson.version}</version>
         </dependency>
+
         <dependency>
             <groupId>com.fasterxml.jackson.core</groupId>
             <artifactId>jackson-core</artifactId>
@@ -157,8 +161,9 @@
         <dependency>
             <groupId>io.syndesis.qe</groupId>
             <artifactId>marketplace-utilities</artifactId>
-            <version>1.2</version>
+            <version>${marketplace.utilities.version}</version>
         </dependency>
+
         <dependency>
             <groupId>io.github.bonigarcia</groupId>
             <artifactId>webdrivermanager</artifactId>
@@ -191,7 +196,6 @@
                     <encoding>UTF-8</encoding>
                     <source>${java.version}</source>
                     <target>${java.version}</target>
-                    <compilerArgument>-Werror</compilerArgument>
                 </configuration>
             </plugin>
             <plugin>
@@ -267,7 +271,8 @@
                 <configuration>
                     <logLevel>minimal</logLevel>
                     <sourceJsonReportDirectory>${project.build.directory}/cucumber</sourceJsonReportDirectory>
-                    <generatedHtmlReportDirectory>${project.build.directory}/cucumber/cucumber-html</generatedHtmlReportDirectory>
+                    <generatedHtmlReportDirectory>${project.build.directory}/cucumber/cucumber-html
+                    </generatedHtmlReportDirectory>
                 </configuration>
             </plugin>
         </plugins>

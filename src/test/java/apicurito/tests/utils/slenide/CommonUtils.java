@@ -53,14 +53,14 @@ public class CommonUtils {
         log.info("searching for button {}", buttonText);
 
         return differentRoot.shouldBe(visible).$$("button").filter(text(buttonText))
-                .shouldHave(sizeGreaterThanOrEqual(1)).first();
+            .shouldHave(sizeGreaterThanOrEqual(1)).first();
     }
 
     public static SelenideElement getButtonWithTitle(String buttonTitle, SelenideElement differentRoot) {
         log.info("searching for button with title {}", buttonTitle);
 
         return differentRoot.shouldBe(visible).$$("button").filter(attribute("title", buttonTitle))
-                .shouldHave(sizeGreaterThanOrEqual(1)).first();
+            .shouldHave(sizeGreaterThanOrEqual(1)).first();
     }
 
     public static SelenideElement getLabelWithName(String labelName, SelenideElement differentRoot) {
@@ -281,9 +281,9 @@ public class CommonUtils {
 
     public static SelenideElement getDropdownMenuItem(String name) {
         return CommonUtils.getAppRoot()
-                .$$(By.cssSelector(".dropdown-menu li a span"))
-                .filter(text(name))
-                .shouldHaveSize(1).first();
+            .$$(By.cssSelector(".dropdown-menu li a span"))
+            .filter(text(name))
+            .shouldHaveSize(1).first();
     }
 
     public static SelenideElement getKebabButtonOnElement(SelenideElement element) {
@@ -326,7 +326,7 @@ public class CommonUtils {
         return null;
     }
 
-    public static void sleepFor(int seconds){
+    public static void sleepFor(int seconds) {
         try {
             Thread.sleep(1000L * seconds);
         } catch (InterruptedException e) {

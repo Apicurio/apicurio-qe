@@ -29,9 +29,9 @@ public class OperationUtils {
         log.info("Setting status code to {}", code);
 
         SelenideElement statusElement = getOperationRoot().$("#addResponseModal")
-                .$$("drop-down").filter(attribute("id", "statusCodeDropDown")).first();
+            .$$("drop-down").filter(attribute("id", "statusCodeDropDown")).first();
         SelenideElement definitionElement = getOperationRoot().$("#addResponseModal")
-                .$$("drop-down").filter(attribute("id", "refDropDown")).first();
+            .$$("drop-down").filter(attribute("id", "refDropDown")).first();
 
         statusElement.$("#statusCodeDropDown").click();
         statusElement.$(By.className("dropdown-menu")).$$("a").filter(text(code)).first().click();

@@ -1,12 +1,11 @@
 package apicurito.tests.utils.slenide;
 
-import static org.assertj.core.api.Assertions.assertThat;
-
 import static com.codeborne.selenide.Condition.attribute;
 import static com.codeborne.selenide.Condition.enabled;
 import static com.codeborne.selenide.Condition.text;
 import static com.codeborne.selenide.Condition.visible;
 import static com.codeborne.selenide.Selenide.$;
+import static org.assertj.core.api.Assertions.assertThat;
 
 import org.openqa.selenium.By;
 
@@ -53,8 +52,8 @@ public class PathUtils {
 
     public static void openPathDescription(String parameter, SelenideElement root) {
         ElementsCollection elements = root.$$(PathElements.PATH_PARAMETERS_ROW)
-                .filter(text(parameter)).first()
-                .$$("div").filter(attribute("class", "description"));
+            .filter(text(parameter)).first()
+            .$$("div").filter(attribute("class", "description"));
         if (elements.size() == 1) {
             elements.first().click();
         }
@@ -62,8 +61,8 @@ public class PathUtils {
 
     public static void openPathTypes(String parameter, SelenideElement root) {
         ElementsCollection elements = root.$$(PathElements.PATH_PARAMETERS_ROW)
-                .filter(text(parameter)).first()
-                .$$("div").filter(attribute("class", "summary"));
+            .filter(text(parameter)).first()
+            .$$("div").filter(attribute("class", "summary"));
         if (elements.size() == 1) {
             elements.first().click();
         }

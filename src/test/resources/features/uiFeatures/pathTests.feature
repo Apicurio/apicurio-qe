@@ -76,7 +76,7 @@ Feature: Path tests
 
     And select path "/operations"
     And select operation "GET"
-    Then check that API "consumes" values "text/xml" on page "operations"
+    Then check that API "consumes" value "text/xml" on page "operations"
 
   @overrideProduces
   Scenario: override produces in operation
@@ -91,7 +91,7 @@ Feature: Path tests
 
     And select path "/operations"
     And select operation "GET"
-    Then check that API "produces" values "text/xml" on page "operations"
+    Then check that API "produces" value "text/xml" on page "operations"
 
   @createOperationQP
   Scenario: create query parameter for operation
@@ -391,8 +391,8 @@ Feature: Path tests
     And check that operation ID is "MyOperationID"
     And check that operation description is "MyDescription"
     And check that operation tags are "tag1,tag2"
-    Then check that API "consumes" values "text/xml" on page "operations"
-    Then check that API "produces" values "text/xml" on page "operations"
+    Then check that API "consumes" value "text/xml" on page "operations"
+    Then check that API "produces" value "text/xml" on page "operations"
 
     And check that exist "query" on "operations" page
       | QueryParameter | Description for Query Param | Required | Array | String | Date |

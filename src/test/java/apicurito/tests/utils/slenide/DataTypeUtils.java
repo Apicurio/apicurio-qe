@@ -27,18 +27,18 @@ public class DataTypeUtils {
         log.info("Opening property description for property {}", property);     //TODO rewrite it will not work in some cases
 
         getDataTypesRoot().$$(DataTypesElements.PROPERTY_ROW)
-                .filter(text(property)).first()
-                .$$("div").filter(attribute("class", "description"))
-                .first()
-                .click();
+            .filter(text(property)).first()
+            .$$("div").filter(attribute("class", "description"))
+            .first()
+            .click();
     }
 
     public static void openPropertyTypes(String property) {
         log.info("Opening property types for property {}", property);
 
         ElementsCollection elements = getDataTypesRoot().$$(DataTypesElements.PROPERTY_ROW)
-                .filter(text(property)).first()
-                .$$("div").filter(attribute("class", "summary"));
+            .filter(text(property)).first()
+            .$$("div").filter(attribute("class", "summary"));
         if (elements.size() == 1) {
             elements.first().click();
         }

@@ -130,4 +130,20 @@ public class ConfigurationOCPUtils {
         }
         return false;
     }
+
+    public static void waitForOneReplicaSet() {
+        int counter = 0;
+        boolean oneReplica = false;
+        while (!oneReplica) {
+            CommonUtils.sleepFor(5);
+
+            if (getApicuritoUIreplicaSets().size() == 1) {
+                oneReplica = true;
+            }
+            ++counter;
+            if (counter == 6) {
+                fail("waiting too long for replica set");
+            }
+        }
+    }
 }

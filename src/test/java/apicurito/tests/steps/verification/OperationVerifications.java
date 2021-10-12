@@ -1,13 +1,18 @@
 package apicurito.tests.steps.verification;
 
-import apicurito.tests.utils.slenide.OperationUtils;
-import com.codeborne.selenide.ElementsCollection;
-import com.codeborne.selenide.SelenideElement;
-import io.cucumber.java.en.Then;
+import static com.codeborne.selenide.Condition.attribute;
+import static com.codeborne.selenide.Condition.exactText;
+import static com.codeborne.selenide.Condition.matchText;
+import static com.codeborne.selenide.Condition.text;
+import static org.assertj.core.api.Assertions.assertThat;
+
 import org.openqa.selenium.By;
 
-import static com.codeborne.selenide.Condition.*;
-import static org.assertj.core.api.Assertions.assertThat;
+import com.codeborne.selenide.ElementsCollection;
+import com.codeborne.selenide.SelenideElement;
+
+import apicurito.tests.utils.slenide.OperationUtils;
+import io.cucumber.java.en.Then;
 
 public class OperationVerifications {
 
@@ -63,7 +68,7 @@ public class OperationVerifications {
     @Then("^check that overridden path parameter \"([^\"]*)\" has description \"([^\"]*)\"$")
     public void checkThatOverriddenPathParameterHasDescription(String parameter, String description) {
         SelenideElement descriptionElement = OperationUtils.getOperationRoot().$(OperationElements.PATH_PARAMETERS_SECTION).$$(OperationElements.PATH_PARAMETERS_ROW)
-                .filter(matchText(parameter)).first().$(OperationElements.DESCRIPTION);
+            .filter(matchText(parameter)).first().$(OperationElements.DESCRIPTION);
 
         assertThat(descriptionElement.getText()).as("Description for path parameter %s is different", parameter).isEqualTo(description);
     }

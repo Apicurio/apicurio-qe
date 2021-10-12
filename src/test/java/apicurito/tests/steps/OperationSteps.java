@@ -57,20 +57,21 @@ public class OperationSteps {
     }
 
     /**
-     * Data table params: response code --> 200, 404, ...
-     *                    response definition
-     *                    boolean true  --> create with plus sign
-     *                            false --> create with link
+     * Data table params:
+     * response code --> 200, 404, ...
+     * response definition
+     * boolean true  --> create with plus sign
+     * false --> create with link
      */
     @When("set response with plus sign")
     public void setResponseWithPlusSign(DataTable table) {
         for (List<String> dataRow : table.cells()) {
-            if (Boolean.valueOf(dataRow.get(2))){
+            if (Boolean.valueOf(dataRow.get(2))) {
                 CommonUtils.getNewPlusSignButton(CommonUtils.Sections.RESPONSE, OperationUtils.getOperationRoot().shouldBe(visible, enabled).shouldNotHave(attribute("disabled")))
-                        .click();
-            }else{
+                    .click();
+            } else {
                 CommonUtils.getClickableLink(CommonUtils.Sections.RESPONSE, OperationUtils.getOperationRoot().shouldBe(visible, enabled).shouldNotHave(attribute("disabled")))
-                        .click();
+                    .click();
             }
             OperationUtils.setResponseDetails(dataRow.get(0), dataRow.get(1));
         }
@@ -98,7 +99,6 @@ public class OperationSteps {
      */
     @When("set parameters types")
     public void setParametersTypes(DataTable table) {       //TODO  add specific parameter when it will be needed
-
         for (List<String> dataRow : table.cells()) {
             String buttonId = CommonUtils.getButtonId(dataRow.get(0));
             SelenideElement page = CommonUtils.getPageElement(dataRow.get(2));
@@ -118,10 +118,10 @@ public class OperationSteps {
         SelenideElement subsection = OperationUtils.getOperationRoot().$(By.className(consumesProduces));
 
         PathUtils.getOperationButton(PathSteps.Operations.valueOf(operation), OperationUtils.getOperationRoot())
-                .click();
+            .click();
 
         CommonUtils.getButtonWithText("Override", subsection)
-                .click();
+            .click();
         CommonUtils.getLabelWithType("text", subsection).setValue(values);
         CommonUtils.getButtonWithTitle("Save changes.", subsection).click();
     }
@@ -129,7 +129,7 @@ public class OperationSteps {
     @When("^delete \"([^\"]*)\" operation$")
     public void deleteOperation(String operation) {
         PathUtils.getOperationButton(PathSteps.Operations.valueOf(operation), OperationUtils.getOperationRoot().shouldBe(visible, enabled).shouldNotHave(attribute("disabled")))
-                .click();
+            .click();
         OperationUtils.deleteOperation();
     }
 
@@ -137,8 +137,8 @@ public class OperationSteps {
     public void createRequestBody() {
         CommonUtils.openCollapsedSection(OperationUtils.getOperationRoot(), OperationElements.REQUEST_BODY_SECTION);
         OperationUtils.getOperationRoot().$(OperationElements.REQUEST_BODY_SECTION).$$(OperationElements.A)
-                .filter(text("Add a request body")).shouldHaveSize(1).first()   //TODO refactor with enum Sections
-                .shouldBe(visible).click();
+            .filter(text("Add a request body")).shouldHaveSize(1).first()   //TODO refactor with enum Sections
+            .shouldBe(visible).click();
     }
 
     @When("^set request body description \"([^\"]*)\"$")
@@ -149,7 +149,7 @@ public class OperationSteps {
     @When("^override security requirements in operation with$")
     public void overrideSecurityRequirementsInOperationWith(DataTable table) {      //TODO same method as in MainPageSteps --> join
         CommonUtils.getNewPlusSignButton(CommonUtils.Sections.REQUIREMENT, MainPageUtils.getMainPageRoot().$(OperationElements.REQUIREMENTS_SECTION))
-                .click();
+            .click();
         SelenideElement requirementEditor = MainPageUtils.getMainPageRoot().$("security-requirement-editor");
 
         for (List<String> dataRow : table.cells()) {
@@ -162,6 +162,6 @@ public class OperationSteps {
             }
         }
         CommonUtils.getButtonWithText("Save", requirementEditor)
-                .click();
+            .click();
     }
 }
