@@ -42,7 +42,6 @@ public class ConfigurationOCPSteps {
 
     private Bundle currentBundle, oldBundle;
     private Index index;
-    private String csv;
 
     @When("^check that \"([^\"]*)\" has \"([^\"]*)\" pods$")
     public void checkThatComponentHasPods(Component component, int count) {
@@ -113,7 +112,7 @@ public class ConfigurationOCPSteps {
 
     /**
      * @param podType operator || image
-     * @param value   pod image
+     * @param value pod image
      */
     @When("check that apicurito {string} is {string}")
     public void checkThatApicuritoImageIs(String podType, String value) {
@@ -161,7 +160,6 @@ public class ConfigurationOCPSteps {
                 quayUser);
             currentBundle = index.addBundle(TestConfiguration.apicuritoOperatorMetadataUrl());
             oldBundle = index.addBundle(ReleaseSpecificParameters.APICURITO_OPERATOR_PREVIOUS_METADATA_URL);
-            csv = currentBundle.getCSVName();
             try {
                 index.addIndexToCluster("apicurito-test-catalog");
             } catch (InterruptedException | TimeoutException | IOException e) {
@@ -213,7 +211,8 @@ public class ConfigurationOCPSteps {
 
     @Then("clean openshift after operatorhub test")
     public void cleanOpenshiftAfterOperatorhubTest() {
-        OpenShiftUtils.binary().execute("delete", "csv", csv);
+        OpenShiftUtils.binary().execute("delete", "csvs", "-l", "operators.coreos.com/fuse-apicurito.apicurito=");
+
         OpenShiftUtils.binary().execute("delete", "subscription", "fuse-apicurito");
         if (TestConfiguration.namespaceCleanupAfter()) {
             OpenShiftUtils.binary().execute("delete", "operatorgroup", "fo-operatorgroup");
@@ -262,8 +261,7 @@ public class ConfigurationOCPSteps {
 
     @Then("check that name and image of operator in operatorhub are correct")
     public void checkThatNameAndImageOfOperatorInOperatorhubAreCorrect() {
-        final String output = OpenShiftUtils.binary().execute("describe", "csv", csv, "-n",
-            TestConfiguration.openShiftNamespace());
+        final String output = OpenShiftUtils.binary().execute("describe", "csvs", "-l", "operators.coreos.com/fuse-apicurito.apicurito=");
         assertThat(output).contains("Display Name:  API Designer");
         assertThat(output).contains("PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAxMD");
     }
@@ -292,7 +290,8 @@ public class ConfigurationOCPSteps {
             ReleaseSpecificParameters.OLD_OPERATOR_URL);
 
         ConfigurationOCPUtils.applyInOCP("Custom Resource",
-            "https://gist.githubusercontent.com/mmajerni/7365800673a3014d6da8773650377d6c/raw/42811ef45986795a8fa3466ad384c9e172057e70/cr_1_pod.yaml");
+            "https://gist.githubusercontent.com/mmajerni/7365800673a3014d6da8773650377d6c/raw/42811ef45986795a8fa3466ad384c9e172057e70/cr_1_pod" +
+                ".yaml");
 
         ConfigurationOCPUtils.waitForOneReplicaSet();
     }
