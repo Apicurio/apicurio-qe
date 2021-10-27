@@ -233,7 +233,6 @@ public class TestConfiguration {
         if (props.getProperty(APICURITO_OPERATOR_CRD_URL) == null) {
             props.setProperty(APICURITO_OPERATOR_CRD_URL, String.format(
                 "https://raw.githubusercontent.com/jboss-fuse/apicurio-operators/master/apicurito/config/crd/bases/apicur.io_apicuritoes.yaml"));
-
         }
         if (props.getProperty(APICURITO_OPERATOR_DEPLOYMENT_URL) == null) {
             downloadDeploymentTemplate();
@@ -291,6 +290,8 @@ public class TestConfiguration {
         Map<String, String> env = pb.environment();
         env.put("IMAGE", image);
         env.put("TAG", tag);
+        env.put("VERSION", ReleaseSpecificParameters.APICURITO_CURRENT_VERSION);
+
         pb.directory(new File("src/test/resources/generatedFiles"));
         try {
             Process p = pb.start();
