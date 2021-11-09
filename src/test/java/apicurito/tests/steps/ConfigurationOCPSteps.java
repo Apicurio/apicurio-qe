@@ -158,8 +158,10 @@ public class ConfigurationOCPSteps {
             index = opm.createIndex(
                 "quay.io/marketplace/fuse-apicurito-index:" + ReleaseSpecificParameters.APICURITO_IMAGE_VERSION,
                 quayUser);
+            index.addBundle(ReleaseSpecificParameters.APICURITO_OPERATOR_7_7_METADATA_URL);
+            index.addBundle(ReleaseSpecificParameters.APICURITO_OPERATOR_7_8_METADATA_URL);
+            oldBundle = index.addBundle(ReleaseSpecificParameters.APICURITO_OPERATOR_7_9_METADATA_URL);
             currentBundle = index.addBundle(TestConfiguration.apicuritoOperatorMetadataUrl());
-            oldBundle = index.addBundle(ReleaseSpecificParameters.APICURITO_OPERATOR_PREVIOUS_METADATA_URL);
             try {
                 index.addIndexToCluster("apicurito-test-catalog");
             } catch (InterruptedException | TimeoutException | IOException e) {
@@ -192,7 +194,7 @@ public class ConfigurationOCPSteps {
     public void upgradeOperatorhub() {
         log.info("Upgrading apicurito subscription");
         oldBundle.update(currentBundle, true);
-        ConfigurationOCPUtils.waitForOperatorUpdate(3);
+        ConfigurationOCPUtils.waitForOperatorUpdate(2);
     }
 
     @Then("check that all deployed pods have (newer|older) version$")
@@ -262,7 +264,7 @@ public class ConfigurationOCPSteps {
     @Then("check that name and image of operator in operatorhub are correct")
     public void checkThatNameAndImageOfOperatorInOperatorhubAreCorrect() {
         final String output = OpenShiftUtils.binary().execute("describe", "csvs", "-l", "operators.coreos.com/fuse-apicurito.apicurito=");
-        assertThat(output).contains("Display Name:  API Designer");
+        assertThat(output).contains("Display Name:  Red Hat Integration - API Designer");
         assertThat(output).contains("PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAxMD");
     }
 
