@@ -10,7 +10,6 @@ import static com.codeborne.selenide.Selenide.$$;
 import static org.assertj.core.api.Assertions.assertThat;
 
 import org.apache.maven.it.VerificationException;
-
 import org.assertj.core.api.Condition;
 import org.openqa.selenium.By;
 
@@ -18,6 +17,8 @@ import com.codeborne.selenide.Selenide;
 import com.codeborne.selenide.SelenideElement;
 
 import java.io.File;
+import java.net.MalformedURLException;
+import java.net.URL;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.List;
@@ -25,6 +26,7 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
 import apicurito.tests.configuration.TestConfiguration;
+import apicurito.tests.utils.HttpUtils;
 import apicurito.tests.utils.slenide.CommonUtils;
 import apicurito.tests.utils.slenide.ImportExportUtils;
 import apicurito.tests.utils.slenide.MainPageUtils;
@@ -75,9 +77,9 @@ public class CommonSteps {
     public void generateAndExportFuseCamelProject() {
         File exportedFuseCamelProject = ImportExportUtils.exportFuseCamelProject();
         assertThat(exportedFuseCamelProject)
-                .exists()
-                .isFile()
-                .has(new Condition<>(f -> f.length() > 0, "File size should be greater than 0"));
+            .exists()
+            .isFile()
+            .has(new Condition<>(f -> f.length() > 0, "File size should be greater than 0"));
     }
 
     @And("^unzip and run generated fuse camel project$")
@@ -90,7 +92,7 @@ public class CommonSteps {
     }
 
     @And("^check that project is generated correctly$")
-    public void checkThatProjectIsGeneratedCorrectly() throws VerificationException {
+    public void checkThatProjectIsGeneratedCorrectly() throws VerificationException, MalformedURLException {
         final Path sourceFolder = Paths.get("tmp" + File.separator + "download");
         final Path destination = sourceFolder.resolve("camel-project");
 
@@ -110,9 +112,7 @@ public class CommonSteps {
         // Open the web browser to verify the returned code is 200 OK and the generated camel project is correct
         final String testUrl = "http://localhost:8080/openapi.json";
         assertThat(Https.doesUrlReturnOK(testUrl).waitFor()).isTrue();
-        Selenide.open(testUrl);
-        $(By.xpath("//pre[contains(text(), 'A brand new API with no content.  Go nuts!')]")).should(com.codeborne.selenide.Condition.exist);
-
+        assertThat(HttpUtils.readFileFromURL(new URL(testUrl))).contains("A brand new API with no content.  Go nuts!");
         // Shutdown the thread
         executorService.shutdown();
     }
