@@ -158,9 +158,9 @@ public class ConfigurationOCPSteps {
             index = opm.createIndex(
                 "quay.io/marketplace/fuse-apicurito-index:" + ReleaseSpecificParameters.APICURITO_IMAGE_VERSION,
                 quayUser);
-            index.addBundle(ReleaseSpecificParameters.APICURITO_OPERATOR_7_7_METADATA_URL);
             index.addBundle(ReleaseSpecificParameters.APICURITO_OPERATOR_7_8_METADATA_URL);
-            oldBundle = index.addBundle(ReleaseSpecificParameters.APICURITO_OPERATOR_7_9_METADATA_URL);
+            index.addBundle(ReleaseSpecificParameters.APICURITO_OPERATOR_7_9_METADATA_URL);
+            oldBundle = index.addBundle(ReleaseSpecificParameters.APICURITO_OPERATOR_7_10_METADATA_URL);
             currentBundle = index.addBundle(TestConfiguration.apicuritoOperatorMetadataUrl());
             try {
                 index.addIndexToCluster("apicurito-test-catalog");
