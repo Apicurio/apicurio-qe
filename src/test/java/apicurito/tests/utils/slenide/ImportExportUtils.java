@@ -1,7 +1,11 @@
 package apicurito.tests.utils.slenide;
 
+import static org.junit.Assert.fail;
+
 import static com.codeborne.selenide.Condition.attribute;
 import static com.codeborne.selenide.Condition.text;
+
+import org.apache.commons.io.IOUtils;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -14,11 +18,8 @@ import java.util.zip.ZipInputStream;
 import apicurito.tests.configuration.CustomWebDriverProvider;
 import lombok.extern.slf4j.Slf4j;
 
-import org.apache.commons.io.IOUtils;
-
 @Slf4j
 public class ImportExportUtils {
-
     public static File exportAPIUtil(String format) {
 
         CommonUtils.getAppRoot().$$("button")
@@ -42,7 +43,7 @@ public class ImportExportUtils {
 
     public static File exportFuseCamelProject() {
         CommonUtils.getAppRoot().$$("button")
-                .filter(attribute("class", "btn btn-lg btn-default dropdown-toggle")).first().click();
+            .filter(attribute("class", "btn btn-lg btn-default dropdown-toggle")).first().click();
         CommonUtils.getAppRoot().$$("a").filter(text("Fuse Camel Project")).first().click();
 
         String filePath = CustomWebDriverProvider.DOWNLOAD_DIR + File.separator + "camel-project.zip";
@@ -53,10 +54,15 @@ public class ImportExportUtils {
         } catch (InterruptedException exception) {
             log.warn("Wait for download failed. The project is not generated.");
         }
+        if (CommonUtils.getAppRoot().$$("div").filter(attribute("class", "alert-global alert alert-danger alert-dismissable shown")).first()
+            .isDisplayed()) {
+            fail("Failed to generate the project.");
+        }
+
         return new File(filePath);
     }
 
-    public static void decompressZip(File source, File destination) throws Exception {
+    public static void decompressZip(File source, File destination) {
         log.info("Decompressing ZIP file");
         try (ZipInputStream i = new ZipInputStream(new FileInputStream(source))) {
             ZipEntry entry;
@@ -65,7 +71,7 @@ public class ImportExportUtils {
                 final File file = new File(name);
                 if (entry.isDirectory()) {
                     if (!file.isDirectory() && !file.mkdirs()) {
-                        throw  new IOException("Failed tp create directory " + file);
+                        throw new IOException("Failed to create directory " + file);
                     }
                 } else {
                     final File parent = file.getParentFile();
@@ -77,7 +83,7 @@ public class ImportExportUtils {
                     }
                 }
             }
-        } catch (Exception e) {
+        } catch (IOException e) {
             log.error("Can't decompress EnMasse.", e);
         }
     }
