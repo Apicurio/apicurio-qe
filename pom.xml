@@ -32,6 +32,7 @@
         <org.json.version>20190722</org.json.version>
         <marketplace.utilities.version>1.2</marketplace.utilities.version>
         <maven.verifier.version>1.5</maven.verifier.version>
+        <commons.io.version>2.6</commons.io.version>
     </properties>
 
     <dependencies>
@@ -183,6 +184,12 @@
             <version>${webdrivermanager.version}</version>
         </dependency>
 
+        <dependency>
+            <groupId>commons-io</groupId>
+            <artifactId>commons-io</artifactId>
+            <version>${commons.io.version}</version>
+        </dependency>
+
     </dependencies>
 
     <repositories>
@@ -266,11 +273,6 @@
                 </executions>
                 <configuration>
                     <includes>apicurito.tests.TestRunner</includes>
-                    <systemProperties>
-                        <kubernetes.auth.tryKubeConfig>false</kubernetes.auth.tryKubeConfig>
-                        <sun.net.spi.nameservice.provider.1>dns,sun</sun.net.spi.nameservice.provider.1>
-                        <sun.net.spi.nameservice.provider.2>default</sun.net.spi.nameservice.provider.2>
-                    </systemProperties>
                 </configuration>
             </plugin>
             <plugin>
