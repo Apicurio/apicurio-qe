@@ -160,8 +160,9 @@ public class ConfigurationOCPSteps {
                 quayUser);
             index.addBundle(ReleaseSpecificParameters.APICURITO_OPERATOR_7_7_METADATA_URL);
             index.addBundle(ReleaseSpecificParameters.APICURITO_OPERATOR_7_8_METADATA_URL);
-            index.addBundle(ReleaseSpecificParameters.APICURITO_OPERATOR_7_9_METADATA_URL);
-            oldBundle = index.addBundle(ReleaseSpecificParameters.APICURITO_OPERATOR_7_10_0_METADATA_URL);
+            oldBundle = index.addBundle(ReleaseSpecificParameters.APICURITO_OPERATOR_7_9_METADATA_URL);
+            index.addBundle(ReleaseSpecificParameters.APICURITO_OPERATOR_7_10_0_METADATA_URL);
+            index.addBundle(ReleaseSpecificParameters.APICURITO_OPERATOR_7_10_1_METADATA_URL);
 
             currentBundle = index.addBundle(TestConfiguration.apicuritoOperatorMetadataUrl());
             try {
