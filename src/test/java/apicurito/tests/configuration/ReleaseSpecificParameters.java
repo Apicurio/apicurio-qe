@@ -3,7 +3,7 @@ package apicurito.tests.configuration;
 public class ReleaseSpecificParameters {
     public static final String APICURITO_IMAGE_VERSION = "1.10";
     public static final String APICURITO_CURRENT_VERSION = "7.10.1";
-    public static final String APICURITO_PREVIOUS_VERSION = "7.10.0";
+    public static final String APICURITO_PREVIOUS_VERSION = "7.9";
     public static final String APICURITO_TEMPLATE_URL =
         "https://raw.githubusercontent.com/jboss-fuse/application-templates/2.1.x.sb2.redhat-7-x/fuse-apicurito.yml";
     public static final String APICURITO_IS_TEMPLATE_URL =
@@ -17,6 +17,9 @@ public class ReleaseSpecificParameters {
     public static final String APICURITO_OPERATOR_7_9_METADATA_URL = "registry.redhat.io/fuse7/fuse-apicurito-rhel8-operator-bundle:1.9";
     // GA image
     public static final String APICURITO_OPERATOR_7_10_0_METADATA_URL =
-        "registry-proxy.engineering.redhat.com/rh-osbs/fuse7-fuse-apicurito-rhel8-operator-metadata:1.10-16";
+        "registry-proxy.engineering.redhat.com/rh-osbs/fuse7-fuse-apicurito-rhel8-operator-metadata:1.10-15";
+    // GA image
+    public static final String APICURITO_OPERATOR_7_10_1_METADATA_URL =
+        "registry-proxy.engineering.redhat.com/rh-osbs/fuse7-fuse-apicurito-rhel8-operator-metadata:1.10-24";
     // GA image
 }
