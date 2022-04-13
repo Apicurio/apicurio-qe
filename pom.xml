@@ -32,7 +32,7 @@
         <org.json.version>20190722</org.json.version>
         <marketplace.utilities.version>1.2</marketplace.utilities.version>
         <maven.verifier.version>1.5</maven.verifier.version>
-        <commons.io.version>2.6</commons.io.version>
+        <commons.io.version>2.7</commons.io.version>
     </properties>
 
     <dependencies>
