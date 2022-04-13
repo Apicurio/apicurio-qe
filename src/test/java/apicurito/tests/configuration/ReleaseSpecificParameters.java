@@ -14,6 +14,12 @@ public class ReleaseSpecificParameters {
         "registry-proxy.engineering.redhat.com/rh-osbs/fuse7-fuse-apicurito-operator-metadata:1.8";
     public static final String APICURITO_OPERATOR_7_9_METADATA_URL = "registry.redhat.io/fuse7/fuse-apicurito-rhel8-operator-bundle:1.9";
     // GA image
-    public static final String APICURITO_OPERATOR_7_10_METADATA_URL = "registry.redhat.io/fuse7/fuse-apicurito-rhel8-operator-bundle:1.10";
+    public static final String APICURITO_OPERATOR_7_10_0_METADATA_URL =
+        "registry-proxy.engineering.redhat.com/rh-osbs/fuse7-fuse-apicurito-rhel8-operator-metadata:1.10-15";
     // GA image
+    public static final String APICURITO_OPERATOR_7_10_1_METADATA_URL =
+        "registry-proxy.engineering.redhat.com/rh-osbs/fuse7-fuse-apicurito-rhel8-operator-metadata:1.10-24";
+    public static final String APICURITO_OPERATOR_7_10_2_METADATA_URL = "registry.redhat.io/fuse7/fuse-apicurito-rhel8-operator-bundle:1.10-25";
+    // GA image
+
 }
