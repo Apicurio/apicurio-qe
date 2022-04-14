@@ -4,7 +4,7 @@
 Feature: Path tests
 
   Background:
-    Given delete API "tmp/download/openapi-spec.json"
+    Given delete file "tmp/download/openapi-spec.json"
     And log into apicurito
 
   @setOperationSummary
