@@ -20,8 +20,8 @@ Feature: OperatorHub installation test
     And check that name and image of operator in operatorhub are correct
 
     #Run simple smoke test
-    When delete API "tmp/download/openapi-spec.json"
-    And delete API "tmp/download/openapi-spec.yaml"
+    When delete file "tmp/download/openapi-spec.json"
+    And delete file "tmp/download/openapi-spec.yaml"
     And log into apicurito
     And import API "src/test/resources/preparedAPIs/basic.json"
     And save API as "json" and close editor
@@ -44,8 +44,8 @@ Feature: OperatorHub installation test
     Then check that all deployed pods have newer version
 
     #Run simple smoke test
-    When delete API "tmp/download/openapi-spec.json"
-    And delete API "tmp/download/openapi-spec.yaml"
+    When delete file "tmp/download/openapi-spec.json"
+    And delete file "tmp/download/openapi-spec.yaml"
     And log into apicurito
     And import API "src/test/resources/preparedAPIs/basic.json"
     And save API as "json" and close editor
