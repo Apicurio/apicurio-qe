@@ -1,5 +1,7 @@
 package apicurito.tests.steps;
 
+import static org.assertj.core.api.Assertions.assertThat;
+
 import static com.codeborne.selenide.Condition.attribute;
 import static com.codeborne.selenide.Condition.cssClass;
 import static com.codeborne.selenide.Condition.enabled;
@@ -7,8 +9,8 @@ import static com.codeborne.selenide.Condition.text;
 import static com.codeborne.selenide.Condition.visible;
 import static com.codeborne.selenide.Selenide.$;
 import static com.codeborne.selenide.Selenide.$$;
-import static org.assertj.core.api.Assertions.assertThat;
 
+import org.apache.commons.io.FileUtils;
 import org.assertj.core.api.Condition;
 import org.openqa.selenium.By;
 
@@ -16,6 +18,9 @@ import com.codeborne.selenide.Selenide;
 import com.codeborne.selenide.SelenideElement;
 
 import java.io.File;
+import java.io.IOException;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.List;
 
 import apicurito.tests.configuration.TestConfiguration;
@@ -25,6 +30,7 @@ import apicurito.tests.utils.slenide.MainPageUtils;
 import apicurito.tests.utils.slenide.OperationUtils;
 import apicurito.tests.utils.slenide.PathUtils;
 import io.cucumber.datatable.DataTable;
+import io.cucumber.java.en.And;
 import io.cucumber.java.en.Given;
 import io.cucumber.java.en.Then;
 import io.cucumber.java.en.When;
@@ -62,6 +68,24 @@ public class CommonSteps {
         ImportExportUtils.importAPI(new File(pathtoFile));
     }
 
+    @And("^generate and export fuse camel project$")
+    public void generateAndExportFuseCamelProject() {
+        File exportedFuseCamelProject = ImportExportUtils.exportFuseCamelProject();
+        assertThat(exportedFuseCamelProject)
+            .exists()
+            .isFile()
+            .has(new Condition<>(f -> f.length() > 0, "File size should be greater than 0"));
+    }
+
+    @And("^unzip and run generated fuse camel project$")
+    public void unzipAndRunGeneratedFuseCamelProject() {
+        final Path sourceFolder = Paths.get("tmp" + File.separator + "download");
+        final File archive = sourceFolder.resolve("camel-project.zip").toFile();
+        final File destination = sourceFolder.resolve("camel-project").toFile();
+        ImportExportUtils.decompressZip(archive, destination);
+        log.info("Fuse Camel Project is decompressed to {}", destination);
+    }
+
     @Then("^save API as \"([^\"]*)\" and close editor$")
     public void saveAPIAsAndCloseEditor(String format) {
         File exportedIntegrationFile = ImportExportUtils.exportAPIUtil(format);
@@ -76,9 +100,18 @@ public class CommonSteps {
             .click();
     }
 
-    @Then("^delete API \"([^\"]*)\"$")
-    public void deleteAPI(String file) {
-        new File(file).delete();
+    @Then("^delete file \"([^\"]*)\"$")
+    public void deleteFile(String filePath) {
+        File file = new File(filePath);
+        if (file.isDirectory()) {
+            try {
+                FileUtils.deleteDirectory(file);
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        } else {
+            file.delete();
+        }
     }
 
     /*

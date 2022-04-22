@@ -1,21 +1,37 @@
 package apicurito.tests.steps.verification;
 
-import static com.codeborne.selenide.Condition.text;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.fail;
 
+import static com.codeborne.selenide.Condition.text;
+
+import org.apache.maven.it.VerificationException;
 import org.openqa.selenium.By;
 
 import com.codeborne.selenide.ElementsCollection;
 import com.codeborne.selenide.SelenideElement;
 
+import java.io.File;
+import java.net.MalformedURLException;
+import java.net.URL;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.List;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 
+import apicurito.tests.utils.HttpUtils;
 import apicurito.tests.utils.slenide.CommonUtils;
+import apicurito.tests.utils.slenide.MavenUtils;
 import apicurito.tests.utils.slenide.OperationUtils;
 import apicurito.tests.utils.slenide.PathUtils;
+import cz.xtf.core.http.Https;
 import io.cucumber.datatable.DataTable;
+import io.cucumber.java.en.And;
 import io.cucumber.java.en.Then;
+import lombok.extern.slf4j.Slf4j;
+
+@Slf4j
 
 public class CommonVerifications {
 
@@ -99,9 +115,11 @@ public class CommonVerifications {
         By sectionBy = CommonUtils.getSectionBy(param);
         SelenideElement elementRow = CommonUtils.getElementRow(CommonUtils.getPageElement(page).$(sectionBy), param, elementName);
         if ("is".equals(isOverridden)) {
-            assertThat(elementRow.$$("button").filter(text("Override"))).as("Object %s with name %s on %s page is not created and should be", param, elementName, page).isNull();
+            assertThat(elementRow.$$("button").filter(text("Override")))
+                .as("Object %s with name %s on %s page is not created and should be", param, elementName, page).isNull();
         } else {
-            assertThat(elementRow.$$("button").filter(text("Override"))).as("Object %s with name %s on %s page is created and should not be", param, elementName, page).isNotNull();
+            assertThat(elementRow.$$("button").filter(text("Override")))
+                .as("Object %s with name %s on %s page is created and should not be", param, elementName, page).isNotNull();
         }
     }
 
@@ -118,7 +136,8 @@ public class CommonVerifications {
 
                 if (!dataRow.get(1).isEmpty()) {
                     String description = row.$(Elements.DESCRIPTION).getText();
-                    assertThat(description).as("%s description should be %s but is %s", message, dataRow.get(1), description).isEqualTo(dataRow.get(1));
+                    assertThat(description).as("%s description should be %s but is %s", message, dataRow.get(1), description)
+                        .isEqualTo(dataRow.get(1));
                 }
 
                 row.$(By.className("summary")).click();
@@ -165,7 +184,8 @@ public class CommonVerifications {
                 if (serverRow.$(By.className("url")).getText().equals(dataRow.get(0))) {
                     if (!dataRow.get(1).isEmpty()) {
                         String description = serverRow.$(By.className("description")).getText();
-                        assertThat(description).as("Server description is %s but it should be %s", description, dataRow.get(1)).isEqualTo(dataRow.get(1));
+                        assertThat(description).as("Server description is %s but it should be %s", description, dataRow.get(1))
+                            .isEqualTo(dataRow.get(1));
                     }
                     found = true;
                     break;
@@ -175,5 +195,38 @@ public class CommonVerifications {
                 fail("Server with url %s was not found", dataRow.get(0));
             }
         }
+    }
+
+    @And("^check that project is generated correctly$")
+    public void checkThatProjectIsGeneratedCorrectly() {
+        final Path sourceFolder = Paths.get("tmp" + File.separator + "download");
+        final Path destination = sourceFolder.resolve("camel-project");
+
+        // Create a new thread and run the generated camel project with maven commands
+        final ExecutorService executorService = Executors.newSingleThreadExecutor();
+        executorService.submit(() -> {
+            try {
+                final MavenUtils mavenUtils = MavenUtils.forProject(destination).forkJvm();
+                mavenUtils.executeGoals("clean", "package");
+                mavenUtils.executeGoals("spring-boot:run");
+            } catch (VerificationException e) {
+                log.error("Error during running the app");
+                log.error("Error message: ", e);
+            }
+        });
+
+        // Open the web browser to verify the returned code is 200 OK and the generated camel project is correct
+        final String testUrl = "http://localhost:8080/openapi.json";
+        assertThat(Https.doesUrlReturnOK(testUrl).waitFor()).isTrue();
+        try {
+            String urlContent = HttpUtils.readFileFromURL(new URL(testUrl));
+            assertThat(urlContent).contains("A brand new API with no content.  Go nuts!");
+            assertThat(urlContent).contains("testAPI");
+        } catch (MalformedURLException e) {
+            e.printStackTrace();
+        }
+
+        // Shutdown the thread
+        executorService.shutdown();
     }
 }

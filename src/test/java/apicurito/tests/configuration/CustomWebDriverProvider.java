@@ -106,6 +106,7 @@ public class CustomWebDriverProvider implements WebDriverProvider {
         firefoxOptions.addPreference("extensions.update.autoUpdateDefault", false);
         firefoxOptions.addPreference("extensions.logging.enabled", false);
         firefoxOptions.addPreference("lightweightThemes.update.enabled", false);
+        firefoxOptions.addPreference("devtools.jsonview.enabled", false);
 
         return new FirefoxDriver(firefoxOptions);
     }
