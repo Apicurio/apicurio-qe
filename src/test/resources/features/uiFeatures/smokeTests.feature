@@ -4,8 +4,8 @@
 Feature: Basic smoke tests
 
   Background:
-    Given delete API "tmp/download/openapi-spec.json"
-    And delete API "tmp/download/openapi-spec.yaml"
+    Given delete file "tmp/download/openapi-spec.json"
+    And delete file "tmp/download/openapi-spec.yaml"
     And log into apicurito
 
   @exportImportJson

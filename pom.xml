@@ -25,14 +25,15 @@
         <webdrivermanager.version>5.0.1</webdrivermanager.version>
         <maven.clean.plugin.version>3.0.0</maven.clean.plugin.version>
         <apache.http.commons.version>4.5.13</apache.http.commons.version>
-        <guava.version>29.0-jre</guava.version>
+        <guava.version>31.1-jre</guava.version>
         <openshift.client.version>4.13.0</openshift.client.version>
         <failsafe.plugin.version>2.22.0</failsafe.plugin.version>
         <cluecumber.plugin.version>2.5.0</cluecumber.plugin.version>
         <org.json.version>20190722</org.json.version>
         <marketplace.utilities.version>1.2</marketplace.utilities.version>
         <maven.verifier.version>1.5</maven.verifier.version>
-        <commons.io.version>2.6</commons.io.version>
+        <commons.io.version>2.7</commons.io.version>
+
     </properties>
 
     <dependencies>
