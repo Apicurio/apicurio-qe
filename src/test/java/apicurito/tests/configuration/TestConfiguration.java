@@ -60,6 +60,8 @@ public class TestConfiguration {
     public static final String OPERATORHUB_REGISTRY_USERNAME = "apicurito.config.operatorhub.registry.username";
     public static final String OPERATORHUB_REGISTRY_PASSWORD = "apicurito.config.operatorhub.registry.password";
 
+    public static final String APICURIO_OPERATORS_DOWNSTREAM_COMMIT_HASH = "apicurito.config.commit.hash";
+
     private static final TestConfiguration INSTANCE = new TestConfiguration();
 
     private final Properties properties = new Properties();
@@ -224,6 +226,10 @@ public class TestConfiguration {
         return get().readValue(OPERATORHUB_REGISTRY_PASSWORD);
     }
 
+    public String getApicurioOperatorsDownstreamCommitHash() {
+        return readValue(APICURIO_OPERATORS_DOWNSTREAM_COMMIT_HASH, "master");
+    }
+
     private Properties defaultValues() {
         final Properties props = new Properties();
 
@@ -232,7 +238,9 @@ public class TestConfiguration {
 
         if (props.getProperty(APICURITO_OPERATOR_CRD_URL) == null) {
             props.setProperty(APICURITO_OPERATOR_CRD_URL, String.format(
-                "https://raw.githubusercontent.com/jboss-fuse/apicurio-operators/master/apicurito/config/crd/bases/apicur.io_apicuritoes.yaml"));
+                "https://raw.githubusercontent.com/jboss-fuse/apicurio-operators/" +
+                    getApicurioOperatorsDownstreamCommitHash() +
+                    "/apicurito/config/crd/bases/apicur.io_apicuritoes.yaml"));
         }
         if (props.getProperty(APICURITO_OPERATOR_DEPLOYMENT_URL) == null) {
             downloadDeploymentTemplate();
@@ -242,24 +250,33 @@ public class TestConfiguration {
         }
         if (props.getProperty(APICURITO_OPERATOR_CR_URL) == null) {
             props.setProperty(APICURITO_OPERATOR_CR_URL, String.format(
-                "https://raw.githubusercontent.com/jboss-fuse/apicurio-operators/master/apicurito/config/samples/apicur_v1alpha1_apicurito_cr.yaml"));
+                "https://raw.githubusercontent.com/jboss-fuse/apicurio-operators/" +
+                    getApicurioOperatorsDownstreamCommitHash() +
+                    "/apicurito/config/samples/apicur_v1alpha1_apicurito_cr.yaml"));
         }
         if (props.getProperty(APICURITO_OPERATOR_SERVICE_URL) == null) {
             props.setProperty(APICURITO_OPERATOR_SERVICE_URL,
                 String
-                    .format("https://raw.githubusercontent.com/jboss-fuse/apicurio-operators/master/apicurito/config/manager/service_account.yaml"));
+                    .format("https://raw.githubusercontent.com/jboss-fuse/apicurio-operators/" +
+                        getApicurioOperatorsDownstreamCommitHash() +
+                        "/apicurito/config/manager/service_account.yaml"));
         }
         if (props.getProperty(APICURITO_OPERATOR_ROLE_URL) == null) {
             props.setProperty(APICURITO_OPERATOR_ROLE_URL,
-                String.format("https://raw.githubusercontent.com/jboss-fuse/apicurio-operators/master/apicurito/config/rbac/role.yaml"));
+                String.format("https://raw.githubusercontent.com/jboss-fuse/apicurio-operators/" +
+                    getApicurioOperatorsDownstreamCommitHash() + "/apicurito/config/rbac/role.yaml"));
         }
         if (props.getProperty(APICURITO_OPERATOR_ROLE_BINDING_URL) == null) {
             props.setProperty(APICURITO_OPERATOR_ROLE_BINDING_URL,
-                String.format("https://raw.githubusercontent.com/jboss-fuse/apicurio-operators/master/apicurito/config/rbac/role_binding.yaml"));
+                String.format(
+                    "https://raw.githubusercontent.com/jboss-fuse/apicurio-operators/" +
+                        getApicurioOperatorsDownstreamCommitHash() + "/apicurito/config/rbac/role_binding.yaml"));
         }
         if (props.getProperty(APICURITO_OPERATOR_CLUSTER_ROLE_URL) == null) {
             props.setProperty(APICURITO_OPERATOR_CLUSTER_ROLE_URL,
-                String.format("https://raw.githubusercontent.com/jboss-fuse/apicurio-operators/master/apicurito/config/rbac/cluster_role.yaml"));
+                String.format(
+                    "https://raw.githubusercontent.com/jboss-fuse/apicurio-operators/" +
+                        getApicurioOperatorsDownstreamCommitHash() + "/apicurito/config/rbac/cluster_role.yaml"));
         }
         if (props.getProperty(APICURITO_OPERATOR_CLUSTER_ROLE_BINDING_URL) == null) {
             props.setProperty(APICURITO_OPERATOR_CLUSTER_ROLE_BINDING_URL,
@@ -303,7 +320,8 @@ public class TestConfiguration {
 
     private void downloadDeploymentTemplate() {
         try {
-            URL url = new URL("https://raw.githubusercontent.com/jboss-fuse/apicurio-operators/master/apicurito/config/manager/deployment.tmpl");
+            URL url = new URL("https://raw.githubusercontent.com/jboss-fuse/apicurio-operators/" +
+                getApicurioOperatorsDownstreamCommitHash() + "/apicurito/config/manager/deployment.tmpl");
             File file = new File("src/test/resources/generatedFiles/deployment.tmpl");
             InputStream input = url.openStream();
             FileUtils.copyInputStreamToFile(input, file);
