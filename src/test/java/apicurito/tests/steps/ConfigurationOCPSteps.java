@@ -61,8 +61,7 @@ public class ConfigurationOCPSteps {
     @When("deploy {string} custom resource")
     public void deployCustomResource(String sequenceNumber) {
         log.info("Deploying " + sequenceNumber + " custom resource");
-        String cr = "https://gist.githubusercontent.com/mmajerni/e47e14f2a1c2bf934219cb3d4508e81c/raw/5ce734862bb98ad3da959a7d2a1deb702269f796/"
-            + "operatorUpdateTest.yaml";
+        String cr = "src/test/resources/CRs/twoPodsCR.yaml";
 
         ConfigurationOCPUtils.applyInOCP("Custom Resource", cr);
 

@@ -1,0 +1,11 @@
+apiVersion: apicur.io/v1
+kind: Apicurito
+metadata:
+  name: apicurito-service
+spec:
+  # Add fields here
+  size: 2
+  # Customizable UI Route Hostname - uncomment if required
+#  uiRouteHostname: "apicurito-ui.example.com"
+  # Customizable Generator Route Hostname - uncomment if required
+#  generatorRouteHostname: "apicurito-generator.example.com"
