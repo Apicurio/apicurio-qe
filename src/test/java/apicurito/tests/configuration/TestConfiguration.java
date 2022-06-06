@@ -32,6 +32,8 @@ public class TestConfiguration {
 
     public static final String APP_ROOT = "apicurito.config.app.root";
 
+    public static final String APICURITO_IIB_IMAGE = "apicurito.config.iib.image";
+
     public static final String APICURITO_USE_OPERATOR = "apicurito.config.use.operator";
     public static final String APICURITO_OPERATOR_CRD_URL = "apicurito.config.operator.crd";
     public static final String APICURITO_OPERATOR_DEPLOYMENT_URL = "apicurito.config.operator.url";
@@ -61,6 +63,10 @@ public class TestConfiguration {
     public static final String OPERATORHUB_REGISTRY_PASSWORD = "apicurito.config.operatorhub.registry.password";
 
     public static final String APICURIO_OPERATORS_DOWNSTREAM_COMMIT_HASH = "apicurito.config.commit.hash";
+
+    public static final String APICURITO_USE_OPERATORHUB = "apicurito.config.use.operatorhub";
+    private static final String OPERATORHUB_CATALOG_SOURCE = "apicurito.config.operatorhub.catalogsource";
+    private static final String OPERATORHUB_CSV_NAME = "apicurito.config.operatorhub.csv.name";
 
     private static final TestConfiguration INSTANCE = new TestConfiguration();
 
@@ -228,6 +234,23 @@ public class TestConfiguration {
 
     public String getApicurioOperatorsDownstreamCommitHash() {
         return readValue(APICURIO_OPERATORS_DOWNSTREAM_COMMIT_HASH, "master");
+    }
+
+    public static boolean useOperatorhub() {
+        return Boolean.parseBoolean(get().readValue(APICURITO_USE_OPERATORHUB, "false"));
+    }
+
+    public static String getApicuritoIibImage() {
+        return get().readValue(APICURITO_IIB_IMAGE, "apicurito-iib-images");
+    }
+
+    // if user doesn't set catalog source, the official catalog is used
+    public static String getOperatorHubCatalogSource() {
+        return get().readValue(OPERATORHUB_CATALOG_SOURCE, "redhat-operators");
+    }
+
+    public static String getOperatorHubCSVName() {
+        return get().readValue(OPERATORHUB_CSV_NAME, "fuse-apicurito.v7.10.0");
     }
 
     private Properties defaultValues() {

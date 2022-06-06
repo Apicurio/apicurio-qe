@@ -21,4 +21,7 @@ public class ReleaseSpecificParameters {
         "registry-proxy.engineering.redhat.com/rh-osbs/fuse7-fuse-apicurito-rhel8-operator-metadata:1.10-24";
     public static final String APICURITO_OPERATOR_7_10_2_METADATA_URL = "registry.redhat.io/fuse7/fuse-apicurito-rhel8-operator-bundle:1.10-25";
     // GA image
+
+    public static final String APICURITO_CURRENT_UPDATE_CHANNEL = "fuse-apicurito-7.11.x";
+    public static final String APICURITO_OLD_UPDATE_CHANNEL = "fuse-apicurito-7.10.x";
 }

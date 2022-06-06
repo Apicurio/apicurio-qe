@@ -59,7 +59,7 @@ public class ConfigurationOCPSteps {
     }
 
     @When("deploy {string} custom resource")
-    public void deployCustomResource(String sequenceNumber) {
+    public static void deployCustomResource(String sequenceNumber) {
         log.info("Deploying " + sequenceNumber + " custom resource");
         String cr = "src/test/resources/CRs/twoPodsCR.yaml";
 
@@ -300,7 +300,7 @@ public class ConfigurationOCPSteps {
         ConfigurationOCPUtils.waitForOneReplicaSet();
     }
 
-    private static OpenShiftService getOpenShiftService() {
+    public static OpenShiftService getOpenShiftService() {
         OpenShiftUser adminUser = new OpenShiftUser(TestConfiguration.openshiftUsername(),
             TestConfiguration.openshiftPassword(), TestConfiguration.openShiftUrl());
         OpenShiftConfiguration openShiftConfiguration = OpenShiftConfiguration.builder()
