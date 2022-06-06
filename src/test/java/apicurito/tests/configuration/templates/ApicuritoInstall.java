@@ -85,6 +85,8 @@ public class ApicuritoInstall {
         OpenShiftUtils.createPullSecret();
         if (TestConfiguration.useOperator()) {
             ApicuritoOperator.reinstallApicurito();
+        } else if (TestConfiguration.useOperatorhub()) {
+            ApicuritoOperatorhub.reinstallApicurito();
         } else {
             ApicuritoTemplate.reinstallApicurito();
         }
