@@ -250,9 +250,9 @@ public class TestConfiguration {
         }
         if (props.getProperty(APICURITO_OPERATOR_CR_URL) == null) {
             props.setProperty(APICURITO_OPERATOR_CR_URL, String.format(
-                "https://raw.githubusercontent.com/jboss-fuse/apicurio-operators/" +
-                    getApicurioOperatorsDownstreamCommitHash() +
-                    "/apicurito/config/samples/apicur_v1alpha1_apicurito_cr.yaml"));
+                "https://raw.githubusercontent.com/jboss-fuse/apicurio-operators/"
+                    + getApicurioOperatorsDownstreamCommitHash() +
+                    "/apicurito/config/samples/apicur_v1_apicurito_cr.yaml"));
         }
         if (props.getProperty(APICURITO_OPERATOR_SERVICE_URL) == null) {
             props.setProperty(APICURITO_OPERATOR_SERVICE_URL,
