@@ -31,7 +31,6 @@
         <cluecumber.plugin.version>2.5.0</cluecumber.plugin.version>
         <org.json.version>20190722</org.json.version>
         <marketplace.utilities.version>1.2</marketplace.utilities.version>
-        <maven.verifier.version>1.5</maven.verifier.version>
         <commons.io.version>2.7</commons.io.version>
 
     </properties>
@@ -65,18 +64,6 @@
             <groupId>ch.qos.logback</groupId>
             <artifactId>logback-classic</artifactId>
             <version>${logback.classic.version}</version>
-        </dependency>
-
-        <dependency>
-            <groupId>org.apache.maven.shared</groupId>
-            <artifactId>maven-verifier</artifactId>
-            <version>${maven.verifier.version}</version>
-            <exclusions>
-                <exclusion>
-                    <groupId>junit</groupId>
-                    <artifactId>junit</artifactId>
-                </exclusion>
-            </exclusions>
         </dependency>
 
         <dependency>
