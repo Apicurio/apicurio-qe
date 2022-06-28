@@ -5,7 +5,6 @@ import static org.assertj.core.api.Assertions.fail;
 
 import static com.codeborne.selenide.Condition.text;
 
-import org.apache.maven.it.VerificationException;
 import org.openqa.selenium.By;
 
 import com.codeborne.selenide.ElementsCollection;
@@ -22,7 +21,6 @@ import java.util.concurrent.Executors;
 
 import apicurito.tests.utils.HttpUtils;
 import apicurito.tests.utils.slenide.CommonUtils;
-import apicurito.tests.utils.slenide.MavenUtils;
 import apicurito.tests.utils.slenide.OperationUtils;
 import apicurito.tests.utils.slenide.PathUtils;
 import cz.xtf.core.http.Https;
@@ -203,15 +201,17 @@ public class CommonVerifications {
         final Path destination = sourceFolder.resolve("camel-project");
 
         // Create a new thread and run the generated camel project with maven commands
+        final Process[] p = new Process[1];
         final ExecutorService executorService = Executors.newSingleThreadExecutor();
         executorService.submit(() -> {
+            ProcessBuilder pb = new ProcessBuilder("../../.././mvnw", "clean", "package");
+            pb.command("../../.././mvnw", "spring-boot:run");
+            pb.directory(new File(String.valueOf(destination)));
             try {
-                final MavenUtils mavenUtils = MavenUtils.forProject(destination).forkJvm();
-                mavenUtils.executeGoals("clean", "package");
-                mavenUtils.executeGoals("spring-boot:run");
-            } catch (VerificationException e) {
-                log.error("Error during running the app");
-                log.error("Error message: ", e);
+                p[0] = pb.start();
+                p[0].waitFor();
+            } catch (Exception e) {
+                log.debug("Exception", e);
             }
         });
 
@@ -227,6 +227,7 @@ public class CommonVerifications {
         }
 
         // Shutdown the thread
+        p[0].destroy();
         executorService.shutdown();
     }
 }
