@@ -234,3 +234,5 @@ drivers
 /src/test/resources/generatedFiles/deployment.gen.yaml
 /src/test/resources/generatedFiles/deployment.tmpl
 
+/index*
+/bundle*

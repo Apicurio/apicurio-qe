@@ -1,3 +1,4 @@
+#CR for 7.11
 apiVersion: apicur.io/v1
 kind: Apicurito
 metadata:

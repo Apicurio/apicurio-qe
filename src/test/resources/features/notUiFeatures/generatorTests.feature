@@ -13,7 +13,7 @@ Feature: Apicurito Generator tests
 
   Scenario: Generate Fuse Camel Project and run it
     When import API "src/test/resources/preparedAPIs/openapi-spec.json"
-    And sleep for 5 seconds
+    And sleep for 10 seconds
 
     Then generate and export fuse camel project
     And unzip and run generated fuse camel project

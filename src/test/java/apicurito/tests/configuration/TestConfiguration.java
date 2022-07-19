@@ -32,9 +32,8 @@ public class TestConfiguration {
 
     public static final String APP_ROOT = "apicurito.config.app.root";
 
-    public static final String APICURITO_IIB_IMAGE = "apicurito.config.iib.image";
+    public static final String APICURITO_INSTALL_METHOD = "apicurito.config.install.method";
 
-    public static final String APICURITO_USE_OPERATOR = "apicurito.config.use.operator";
     public static final String APICURITO_OPERATOR_CRD_URL = "apicurito.config.operator.crd";
     public static final String APICURITO_OPERATOR_DEPLOYMENT_URL = "apicurito.config.operator.url";
     public static final String APICURITO_OPERATOR_SERVICE_URL = "apicurito.config.operator.service";
@@ -48,25 +47,13 @@ public class TestConfiguration {
 
     public static final String APICURITO_OPERATOR_IMAGE_URL = "apicurito.config.operator.image.url";
     public static final String APICURITO_UI_IMAGE_URL = "apicurito.config.ui.image.url";
-    public static final String APICURITO_OPERATOR_METADATA_URL = "apicurito.config.operator.metadata.url";
     public static final String APICURITO_GENERATOR_IMAGE_URL = "apicurito.config.generator.image.url";
+    public static final String APICURITO_IIB_IMAGE = "apicurito.config.iib.image";
 
     public static final String APICURITO_UI_USERNAME = "apicurito.config.ui.username";
     public static final String APICURITO_UI_PASSWORD = "apicurito.config.ui.password";
 
-    public static final String QUAY_USERNAME = "apicurito.config.quay.username";
-    public static final String QUAY_PASSWORD = "apicurito.config.quay.password";
-    public static final String QUAY_NAMESPACE = "apicurito.config.quay.namespace";
-    public static final String OPERATORHUB_ICSP_SCRIPT_URL = "apicurito.config.operatorhub.icsp.url";
-    public static final String OPERATORHUB_REGISTRY_NAME = "apicurito.config.operatorhub.registry.name";
-    public static final String OPERATORHUB_REGISTRY_USERNAME = "apicurito.config.operatorhub.registry.username";
-    public static final String OPERATORHUB_REGISTRY_PASSWORD = "apicurito.config.operatorhub.registry.password";
-
     public static final String APICURIO_OPERATORS_DOWNSTREAM_COMMIT_HASH = "apicurito.config.commit.hash";
-
-    public static final String APICURITO_USE_OPERATORHUB = "apicurito.config.use.operatorhub";
-    private static final String OPERATORHUB_CATALOG_SOURCE = "apicurito.config.operatorhub.catalogsource";
-    private static final String OPERATORHUB_CSV_NAME = "apicurito.config.operatorhub.csv.name";
 
     private static final TestConfiguration INSTANCE = new TestConfiguration();
 
@@ -116,8 +103,8 @@ public class TestConfiguration {
             .readValue(APICURITO_IS_TEMPLATE_URL, ReleaseSpecificParameters.APICURITO_IS_TEMPLATE_URL);
     }
 
-    public static boolean useOperator() {
-        return Boolean.parseBoolean(get().readValue(APICURITO_USE_OPERATOR));
+    public static String apicuritoInstallMethod() {
+        return get().readValue(APICURITO_INSTALL_METHOD);
     }
 
     public static String apicuritoOperatorCrdUrl() {
@@ -134,10 +121,6 @@ public class TestConfiguration {
 
     public static String apicuritoOperatorImageUrl() {
         return get().readValue(APICURITO_OPERATOR_IMAGE_URL);
-    }
-
-    public static String apicuritoOperatorMetadataUrl() {
-        return get().readValue(APICURITO_OPERATOR_METADATA_URL);
     }
 
     public static String apicuritoGeneratorImageUrl() {
@@ -192,18 +175,6 @@ public class TestConfiguration {
         return get().readValue(APP_ROOT, "app-root");
     }
 
-    public static String getQuayUsername() {
-        return get().readValue(QUAY_USERNAME);
-    }
-
-    public static String getQuayPassword() {
-        return get().readValue(QUAY_PASSWORD);
-    }
-
-    public static String getQuayNamespace() {
-        return get().readValue(QUAY_NAMESPACE);
-    }
-
     public static String openshiftUsername() {
         return get().readValue(APICURITO_UI_USERNAME);
     }
@@ -216,41 +187,12 @@ public class TestConfiguration {
         return get().readValue(APICURITO_PULL_SECRET);
     }
 
-    public static String operatorhubIcspScriptURL() {
-        return get().readValue(OPERATORHUB_ICSP_SCRIPT_URL);
-    }
-
-    public static String getOperatorhubRegistryName() {
-        return get().readValue(OPERATORHUB_REGISTRY_NAME);
-    }
-
-    public static String getOperatorhubRegistryUsername() {
-        return get().readValue(OPERATORHUB_REGISTRY_USERNAME);
-    }
-
-    public static String getOperatorhubRegistryPassword() {
-        return get().readValue(OPERATORHUB_REGISTRY_PASSWORD);
-    }
-
     public String getApicurioOperatorsDownstreamCommitHash() {
         return readValue(APICURIO_OPERATORS_DOWNSTREAM_COMMIT_HASH, "master");
     }
 
-    public static boolean useOperatorhub() {
-        return Boolean.parseBoolean(get().readValue(APICURITO_USE_OPERATORHUB, "false"));
-    }
-
     public static String getApicuritoIibImage() {
         return get().readValue(APICURITO_IIB_IMAGE, "apicurito-iib-images");
-    }
-
-    // if user doesn't set catalog source, the official catalog is used
-    public static String getOperatorHubCatalogSource() {
-        return get().readValue(OPERATORHUB_CATALOG_SOURCE, "redhat-operators");
-    }
-
-    public static String getOperatorHubCSVName() {
-        return get().readValue(OPERATORHUB_CSV_NAME, "fuse-apicurito.v7.10.0");
     }
 
     private Properties defaultValues() {
@@ -306,7 +248,7 @@ public class TestConfiguration {
                 String.format("src/test/resources/generatedFiles/cluster_role_binding.yaml"));
         }
 
-        props.setProperty(APICURITO_USE_OPERATOR, "true");
+        props.setProperty(APICURITO_INSTALL_METHOD, "operatorhub");
 
         // Copy syndesis properties to their xtf counterparts - used by binary oc client
         if (System.getProperty("xtf.openshift.url") == null) {

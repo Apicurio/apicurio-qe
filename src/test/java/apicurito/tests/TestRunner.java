@@ -8,6 +8,7 @@ import com.codeborne.selenide.Configuration;
 
 import apicurito.tests.configuration.TestConfiguration;
 import apicurito.tests.configuration.templates.ApicuritoInstall;
+import apicurito.tests.steps.ConfigurationOCPSteps;
 import apicurito.tests.utils.openshift.OpenShiftUtils;
 import apicurito.tests.utils.slenide.CommonUtils;
 import io.cucumber.junit.Cucumber;
@@ -41,6 +42,7 @@ public class TestRunner {
 
         if (Boolean.parseBoolean(TestConfiguration.doReinstall())) {
             if (!createdProject) {
+                ConfigurationOCPSteps.cleanOpenshiftAfterOperatorhubTest();
                 ApicuritoInstall.cleanNamespace();
             }
             ApicuritoInstall.reinstallApicurito();

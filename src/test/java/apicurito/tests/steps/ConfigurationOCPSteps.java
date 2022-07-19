@@ -2,14 +2,12 @@ package apicurito.tests.steps;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-import io.syndesis.qe.marketplace.manifests.Bundle;
-import io.syndesis.qe.marketplace.manifests.Index;
-import io.syndesis.qe.marketplace.manifests.Opm;
 import io.syndesis.qe.marketplace.openshift.OpenShiftConfiguration;
 import io.syndesis.qe.marketplace.openshift.OpenShiftService;
 import io.syndesis.qe.marketplace.openshift.OpenShiftUser;
-import io.syndesis.qe.marketplace.quay.QuayUser;
+import io.syndesis.qe.marketplace.util.HelperFunctions;
 
+import org.json.JSONObject;
 import org.yaml.snakeyaml.Yaml;
 
 import java.io.FileInputStream;
@@ -22,16 +20,17 @@ import java.nio.file.Path;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.TimeUnit;
-import java.util.concurrent.TimeoutException;
 
 import apicurito.tests.configuration.Component;
 import apicurito.tests.configuration.ReleaseSpecificParameters;
 import apicurito.tests.configuration.TestConfiguration;
 import apicurito.tests.configuration.templates.ApicuritoInstall;
 import apicurito.tests.configuration.templates.ApicuritoOperator;
+import apicurito.tests.configuration.templates.ApicuritoOperatorhub;
 import apicurito.tests.configuration.templates.ApicuritoTemplate;
 import apicurito.tests.utils.openshift.OpenShiftUtils;
 import apicurito.tests.utils.slenide.ConfigurationOCPUtils;
+import cz.xtf.core.openshift.OpenShift;
 import io.cucumber.java.en.Then;
 import io.cucumber.java.en.When;
 import io.fabric8.kubernetes.api.model.Pod;
@@ -40,8 +39,7 @@ import lombok.extern.slf4j.Slf4j;
 @Slf4j
 public class ConfigurationOCPSteps {
 
-    private Bundle currentBundle, oldBundle;
-    private Index index;
+    public static final String SUBSCRIPTION_NAME = "fuse-apicurito";
 
     @When("^check that \"([^\"]*)\" has \"([^\"]*)\" pods$")
     public void checkThatComponentHasPods(Component component, int count) {
@@ -58,17 +56,26 @@ public class ConfigurationOCPSteps {
             .isEqualTo(count);
     }
 
+    /**
+     * @param crName current || older || second
+     * current CR - CR with the current API version
+     * older CR - CR with the deprecated v1alpha1 API version
+     * second CR - CR which replaced another CR (used in @update test)
+     */
     @When("deploy {string} custom resource")
-    public static void deployCustomResource(String sequenceNumber) {
-        log.info("Deploying " + sequenceNumber + " custom resource");
-        String cr = "src/test/resources/CRs/twoPodsCR.yaml";
-
+    public static void deployCustomResource(String crName) {
+        log.info("Deploying " + crName + " custom resource");
+        String cr;
+        if (crName.equals("older")) {
+            cr = "src/test/resources/CRs/v1alpha1CR.yaml";
+        } else {
+            cr = "src/test/resources/CRs/twoPodsCR.yaml";
+        }
         ConfigurationOCPUtils.applyInOCP("Custom Resource", cr);
 
         log.info("Waiting for Apicurito pods");
-        if ("first".equals(sequenceNumber)) {
-            ApicuritoInstall.waitForApicurito("component", 2, Component.SERVICE);
-        } else {
+        ApicuritoInstall.waitForApicurito("component", 2, Component.SERVICE);
+        if ("second".equals(crName)) {
             ConfigurationOCPUtils.waitForRollout();
         }
     }
@@ -106,7 +113,7 @@ public class ConfigurationOCPSteps {
             ConfigurationOCPUtils.setTestEnvToOperator("RELATED_IMAGE_APICURITO",
                 TestConfiguration.apicuritoUiImageUrl());
         }
-        ConfigurationOCPUtils.waitForOperatorUpdate(1);
+        ConfigurationOCPUtils.waitForPodsUpdate(1);
     }
 
     /**
@@ -146,57 +153,35 @@ public class ConfigurationOCPSteps {
             .waitFor();
     }
 
-    @When("setup operatorhub on cluster")
-    public void setupOperatorhub() {
-        if (index == null) {
-            log.info("Creating apicurito index.");
-            OpenShiftService ocpSvc = getOpenShiftService();
-            Opm opm = new Opm(ocpSvc);
-            QuayUser quayUser = new QuayUser(TestConfiguration.getQuayUsername(), TestConfiguration.getQuayPassword());
-
-            index = opm.createIndex(
-                "quay.io/marketplace/fuse-apicurito-index:" + ReleaseSpecificParameters.APICURITO_IMAGE_VERSION,
-                quayUser);
-            index.addBundle(ReleaseSpecificParameters.APICURITO_OPERATOR_7_8_METADATA_URL);
-            index.addBundle(ReleaseSpecificParameters.APICURITO_OPERATOR_7_9_METADATA_URL);
-            index.addBundle(ReleaseSpecificParameters.APICURITO_OPERATOR_7_10_0_METADATA_URL);
-            index.addBundle(ReleaseSpecificParameters.APICURITO_OPERATOR_7_10_1_METADATA_URL);
-
-            oldBundle = index.addBundle(ReleaseSpecificParameters.APICURITO_OPERATOR_7_10_2_METADATA_URL);
-            currentBundle = index.addBundle(TestConfiguration.apicuritoOperatorMetadataUrl());
-            try {
-                index.addIndexToCluster("apicurito-test-catalog");
-            } catch (InterruptedException | TimeoutException | IOException e) {
-                log.error("Adding the index to cluster failed", e);
-            }
-        }
-    }
-
-    @When("deploy operator from operatorhub")
-    public void deployOperatorHub() {
-        try {
-            log.info("Creating apicurito subscription");
-            currentBundle.createSubscription();
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-    }
-
     @When("deploy older operator from operatorhub")
     public void deployOlderOperatorHub() {
-        try {
-            log.info("Creating apicurito subscription");
-            oldBundle.createSubscription();
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
+        log.info("Creating apicurito subscription");
+        ApicuritoOperatorhub.deploy(ReleaseSpecificParameters.APICURITO_OLD_UPDATE_CHANNEL, "older");
     }
 
     @When("upgrade operator via operatorhub")
     public void upgradeOperatorhub() {
         log.info("Upgrading apicurito subscription");
-        oldBundle.update(currentBundle, true);
-        ConfigurationOCPUtils.waitForOperatorUpdate(2);
+
+        try {
+            OpenShift ocp = ConfigurationOCPSteps.getOpenShiftService().getClient();
+            String namespace = ConfigurationOCPSteps.getOpenShiftService().getClient().getNamespace();
+            JSONObject subscription = ApicuritoOperatorhub.getSubscription();
+            assertThat(subscription).isNotNull();
+            subscription.getJSONObject("spec").put("channel", ReleaseSpecificParameters.APICURITO_CURRENT_UPDATE_CHANNEL);
+            HelperFunctions.waitFor(() -> {
+                try {
+                    ocp.customResource(ApicuritoOperatorhub.getSubscriptionContext()).edit(namespace, SUBSCRIPTION_NAME, subscription.toString());
+                    return true;
+                } catch (Exception e) {
+                    return false;
+                }
+            }, 300L, 120L);
+            ConfigurationOCPUtils.waitForOperatorUpdate();
+            ConfigurationOCPUtils.waitForPodsUpdate(2);
+        } catch (Exception e) {
+            log.debug("Exception", e);
+        }
     }
 
     @Then("check that all deployed pods have (newer|older) version$")
@@ -214,7 +199,7 @@ public class ConfigurationOCPSteps {
     }
 
     @Then("clean openshift after operatorhub test")
-    public void cleanOpenshiftAfterOperatorhubTest() {
+    public static void cleanOpenshiftAfterOperatorhubTest() {
         OpenShiftUtils.binary().execute("delete", "csvs", "-l", "operators.coreos.com/fuse-apicurito.apicurito=");
 
         OpenShiftUtils.binary().execute("delete", "subscription", "fuse-apicurito");
@@ -304,11 +289,7 @@ public class ConfigurationOCPSteps {
         OpenShiftUser adminUser = new OpenShiftUser(TestConfiguration.openshiftUsername(),
             TestConfiguration.openshiftPassword(), TestConfiguration.openShiftUrl());
         OpenShiftConfiguration openShiftConfiguration = OpenShiftConfiguration.builder()
-            .namespace(TestConfiguration.openShiftNamespace())
-            .dockerRegistry(TestConfiguration.getOperatorhubRegistryName())
-            .dockerUsername(TestConfiguration.getOperatorhubRegistryUsername())
-            .dockerPassword(TestConfiguration.getOperatorhubRegistryPassword())
-            .icspFile(TestConfiguration.operatorhubIcspScriptURL()).build();
+            .namespace(TestConfiguration.openShiftNamespace()).build();
         return new OpenShiftService(openShiftConfiguration,
             adminUser, null);
     }
