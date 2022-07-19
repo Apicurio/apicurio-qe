@@ -1,0 +1,8 @@
+#CR for 7.10
+apiVersion: apicur.io/v1alpha1
+kind: Apicurito
+metadata:
+  name: apicurito-service
+spec:
+  # Add fields here
+  size: 2

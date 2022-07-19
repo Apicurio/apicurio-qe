@@ -25,19 +25,15 @@ apicurito.config.openshift.namespace=
 apicurito.config.openshift.namespace.cleanup.after=
 apicurito.config.openshift.reinstall=
 apicurito.config.ui.browser=
-apicurito.config.use.operator=
+apicurito.config.install.method=
+
 apicurito.config.operator.image.url=
+apicurito.config.commit.hash=
 apicurito.config.ui.image.url=
 apicurito.config.generator.image.url=
-apicurito.config.operator.metadata.url=
-apicurito.config.pull.secret=
+apicurito.config.iib.image=
 
-apicurito.config.quay.username=
-apicurito.config.quay.password=
-apicurito.config.quay.namespace=
-apicurito.config.quay.auth.token=
-apicurito.config.quay.opsrc.token=
-apicurito.config.quay.pull.secret=
+apicurito.config.pull.secret=
 ```
 
 #### Description of parameters
@@ -73,7 +69,9 @@ apicurito.config.quay.pull.secret=
 - Supported options:
 [ firefox | chrome ]. Default is firefox.
 
-**apicurito.config.use.operator** if set to true it will install Apicurito via operator installation method otherwise it will install via template installation. Default value is true.
+**apicurito.config.install.method** represents Apicurito installation type.
+- Supported options:
+[ operatorhub | operator | template ]. Default is operatorhub.
 
 **apicurito.config.pull.secret** secret is needed for the following images which are stored at quay.io.
 
@@ -82,6 +80,11 @@ apicurito.config.quay.pull.secret=
   - quay.io/redhat/apicurito-operator:1.8-x
   - docker.io/redhat/apicurito-operator:1.8-x
 
+**apicurito.config.commit.hash** specifies the version of the https://github.com/jboss-fuse/apicurio-operators repository.
+- Needed only for Operator installation.
+- Default is master.
+- You can find the commit hash in the operator image build log.
+ (e.g. http://download.eng.bos.redhat.com/brewroot/packages/fuse-apicurito-rhel-8-operator-container/1.11/21/data/logs/orchestrator.log)
 **apicurito.config.ui.image.url** can override the default ui image which is defined in the operator or in operator.yaml as RELATED_IMAGE_UI.
 - Examples:
   - quay.io/redhat/apicurito-ui:1.8-x
@@ -93,22 +96,8 @@ apicurito.config.quay.pull.secret=
   - quay.io/redhat/apicurito-generator:1.8-x
   - docker.io/redhat/apicurito-generator:1.8-x
 
-**apicurito.config.operator.metadata.url** is an url to image which contains metadata for installation Apicurito via operatorhub. Needed only for **@operatorhub** test.
-- Examples:
-  - registry.redhat.io/fuse7/fuse-apicurito-operator-bundle:1.8-x
-  - registry-proxy.engineering.redhat.com/rh-osbs/fuse7-fuse-apicurito-operator-metadata:1.8-x
-
-**apicurito.config.quay.username** Needed only for **@operatorhub** test. Specify quay username.
-
-**apicurito.config.quay.password** Needed only for **@operatorhub** test. Specify quay password for user above.
-
-**apicurito.config.quay.namespace** Needed only for **@operatorhub** test. Specify quay namespace where operator index will be stored.
-
-**apicurito.config.quay.auth.token** Needed only for **@operatorhub** test. Specify quay auth token for user above.
-
-**apicurito.config.quay.opsrc.token** Needed only for **@operatorhub** test. Specify quay OperatorSource token for user above.
-
-**apicurito.config.quay.pull.secret** Needed only for **@operatorhub** test. Specify quay pull secret for stored operator index.
+**apicurito.config.iib.image** is a name of the IIB image. Needed only for OperatorHub installation.
+- Default value: apicurito-iib-images
 
 ## How to run tests
 

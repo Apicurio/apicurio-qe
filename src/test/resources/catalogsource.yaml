@@ -1,0 +1,13 @@
+# run `oc apply -f catalogsource.yaml -n openshift-marketplace` to apply this catalogsource
+# you can find the image below in the CVP-OPS email in the section Index Image Location
+apiVersion: operators.coreos.com/v1alpha1
+kind: CatalogSource
+metadata:
+  name: apicurito-iib-images
+  namespace: openshift-marketplace
+spec:
+  sourceType: grpc
+  image: registry-proxy.engineering.redhat.com/rh-osbs/iib:263984
+  displayName: apicurito-iib-images IIB images
+  publisher: grpc
+
