@@ -48,7 +48,7 @@ public class TestConfiguration {
     public static final String APICURITO_OPERATOR_IMAGE_URL = "apicurito.config.operator.image.url";
     public static final String APICURITO_UI_IMAGE_URL = "apicurito.config.ui.image.url";
     public static final String APICURITO_GENERATOR_IMAGE_URL = "apicurito.config.generator.image.url";
-    public static final String APICURITO_IIB_IMAGE = "apicurito.config.iib.image";
+    public static final String APICURITO_CATALOGSOURCE = "apicurito.config.catalogsource";
 
     public static final String APICURITO_UI_USERNAME = "apicurito.config.ui.username";
     public static final String APICURITO_UI_PASSWORD = "apicurito.config.ui.password";
@@ -191,8 +191,8 @@ public class TestConfiguration {
         return readValue(APICURIO_OPERATORS_DOWNSTREAM_COMMIT_HASH, "master");
     }
 
-    public static String getApicuritoIibImage() {
-        return get().readValue(APICURITO_IIB_IMAGE, "apicurito-iib-images");
+    public static String getApicuritoCatalogSource() {
+        return get().readValue(APICURITO_CATALOGSOURCE, "apicurito-iib-images");
     }
 
     private Properties defaultValues() {

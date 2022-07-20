@@ -31,7 +31,7 @@ apicurito.config.operator.image.url=
 apicurito.config.commit.hash=
 apicurito.config.ui.image.url=
 apicurito.config.generator.image.url=
-apicurito.config.iib.image=
+apicurito.config.catalogsource=
 
 apicurito.config.pull.secret=
 ```
@@ -85,6 +85,7 @@ apicurito.config.pull.secret=
 - Default is master.
 - You can find the commit hash in the operator image build log.
  (e.g. http://download.eng.bos.redhat.com/brewroot/packages/fuse-apicurito-rhel-8-operator-container/1.11/21/data/logs/orchestrator.log)
+
 **apicurito.config.ui.image.url** can override the default ui image which is defined in the operator or in operator.yaml as RELATED_IMAGE_UI.
 - Examples:
   - quay.io/redhat/apicurito-ui:1.8-x
@@ -96,7 +97,7 @@ apicurito.config.pull.secret=
   - quay.io/redhat/apicurito-generator:1.8-x
   - docker.io/redhat/apicurito-generator:1.8-x
 
-**apicurito.config.iib.image** is a name of the IIB image. Needed only for OperatorHub installation.
+**apicurito.config.catalogsource** is a name of the catalog source. Needed only for OperatorHub installation.
 - Default value: apicurito-iib-images
 
 ## How to run tests

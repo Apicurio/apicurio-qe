@@ -7,7 +7,7 @@ metadata:
   namespace: openshift-marketplace
 spec:
   sourceType: grpc
-  image: registry-proxy.engineering.redhat.com/rh-osbs/iib:263984
+  image: <CHANGE ME TO IIB IMAGE>
   displayName: apicurito-iib-images IIB images
   publisher: grpc
 

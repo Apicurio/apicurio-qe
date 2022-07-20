@@ -24,7 +24,7 @@ public class ApicuritoOperatorhub extends ApicuritoInstall {
 
         Bundle.createSubscription(ConfigurationOCPSteps.getOpenShiftService(), SUBSCRIPTION_NAME,
             updateChannel, "''",
-            TestConfiguration.getApicuritoIibImage());
+            TestConfiguration.getApicuritoCatalogSource());
 
         OpenShiftUtils.xtf().waiters()
             .areExactlyNPodsReady(1, "name", "fuse-apicurito")

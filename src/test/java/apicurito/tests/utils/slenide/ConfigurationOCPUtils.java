@@ -77,7 +77,8 @@ public class ConfigurationOCPUtils {
                 return found != null;
             }, 2L, 300L);
         } catch (Exception e) {
-            log.debug("Exception", e);
+            log.error("Exception", e);
+            throw new RuntimeException(e);
         }
     }
 

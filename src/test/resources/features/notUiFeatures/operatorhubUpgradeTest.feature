@@ -1,5 +1,7 @@
 @apicuritoTests
+@operatorhub
 @operatorhubUpgrade
+
 Feature: OperatorHub upgrade test
 
   Background:
