@@ -20,6 +20,7 @@ import java.nio.file.Path;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.TimeUnit;
+import java.util.concurrent.TimeoutException;
 
 import apicurito.tests.configuration.Component;
 import apicurito.tests.configuration.ReleaseSpecificParameters;
@@ -167,7 +168,7 @@ public class ConfigurationOCPSteps {
             OpenShift ocp = ConfigurationOCPSteps.getOpenShiftService().getClient();
             String namespace = ConfigurationOCPSteps.getOpenShiftService().getClient().getNamespace();
             JSONObject subscription = ApicuritoOperatorhub.getSubscription();
-            assertThat(subscription).isNotNull();
+            assertThat(subscription).describedAs("Apicurito subscription was not found in " + namespace + " namespace.").isNotNull();
             subscription.getJSONObject("spec").put("channel", ReleaseSpecificParameters.APICURITO_CURRENT_UPDATE_CHANNEL);
             HelperFunctions.waitFor(() -> {
                 try {
@@ -176,11 +177,12 @@ public class ConfigurationOCPSteps {
                 } catch (Exception e) {
                     return false;
                 }
-            }, 300L, 120L);
+            }, 120L, 300L);
             ConfigurationOCPUtils.waitForOperatorUpdate();
             ConfigurationOCPUtils.waitForPodsUpdate(2);
-        } catch (Exception e) {
-            log.debug("Exception", e);
+        } catch (InterruptedException | TimeoutException e) {
+            log.error("Exception", e);
+            throw new RuntimeException(e);
         }
     }
 
