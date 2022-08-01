@@ -18,7 +18,7 @@ public class CommonHooks {
 
     @Before("@skip_scenario_template")
     public void skip_scenario_template(Scenario scenario) {
-        if (!TestConfiguration.useOperator()) {
+        if (!TestConfiguration.apicuritoInstallMethod().equals("operator")) {
             TestConfiguration.printDivider("SKIP SCENARIO: " + scenario.getName());
             Assume.assumeTrue(false);
         }
