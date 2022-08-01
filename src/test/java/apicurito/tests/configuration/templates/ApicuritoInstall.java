@@ -23,7 +23,7 @@ public class ApicuritoInstall {
         TestConfiguration.printDivider("Deleting namespace resources");
 
         try {
-            OpenShiftUtils.getInstance().customResourceDefinitions().withName("apicuritoes.apicur.io").delete();
+            OpenShiftUtils.binary().execute("delete", "crd", "apicuritoes.apicur.io");
             OpenShiftUtils.binary().execute("delete", "ClusterRole", "apicurito");
             OpenShiftUtils.binary().execute("delete", "ClusterRoleBinding", "apicurito");
             //OCP4HACK - openshift-client 4.3.0 isn't supported with OCP4 and can't create/delete templates, following line can be removed later
@@ -83,8 +83,10 @@ public class ApicuritoInstall {
 
     public static void reinstallApicurito() {
         OpenShiftUtils.createPullSecret();
-        if (TestConfiguration.useOperator()) {
+        if (TestConfiguration.apicuritoInstallMethod().equals("operator")) {
             ApicuritoOperator.reinstallApicurito();
+        } else if (TestConfiguration.apicuritoInstallMethod().equals("operatorhub")) {
+            ApicuritoOperatorhub.reinstallApicurito();
         } else {
             ApicuritoTemplate.reinstallApicurito();
         }

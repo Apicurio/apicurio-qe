@@ -3,33 +3,30 @@ package apicurito.tests.utils.slenide;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.fail;
 
+import io.syndesis.qe.marketplace.util.HelperFunctions;
+
+import com.jayway.jsonpath.Criteria;
+import com.jayway.jsonpath.DocumentContext;
+import com.jayway.jsonpath.Filter;
+import com.jayway.jsonpath.JsonPath;
+
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
 import apicurito.tests.configuration.Component;
+import apicurito.tests.configuration.ReleaseSpecificParameters;
 import apicurito.tests.configuration.TestConfiguration;
+import apicurito.tests.steps.ConfigurationOCPSteps;
 import apicurito.tests.utils.openshift.OpenShiftUtils;
+import cz.xtf.core.openshift.OpenShift;
 import io.fabric8.kubernetes.api.model.Pod;
 import io.fabric8.kubernetes.api.model.apps.ReplicaSet;
+import io.fabric8.kubernetes.client.dsl.base.CustomResourceDefinitionContext;
 import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
 public class ConfigurationOCPUtils {
-
-    public static void waitForOperatorUpdate(int numberOfPods) {
-        log.info("Waiting for 2 created replica sets");
-        //Wait for 2 minutes for replica sets
-        if (!areTwoReplicaSetsAvailable()) {
-            fail("TIMEOUT 2 minutes : Failed to load 2 replica sets");
-        }
-
-        log.info("Waiting for exactly" + numberOfPods + " running Apicurito UI pod.");
-        //Wait 3 minutes for n running pods
-        if (!areExactlyNUiPodsRunning(numberOfPods)) {
-            fail("TIMEOUT 3 minutes: Failed to load " + numberOfPods + " running Apicurito pods.");
-        }
-    }
 
     public static void waitForRollout() {
         //Wait for Rollout until there is no unavailable pod
@@ -45,6 +42,49 @@ public class ConfigurationOCPUtils {
 
         //Wait another 15 seconds because of termination running pods
         CommonUtils.sleepFor(15);
+    }
+
+    public static void waitForPodsUpdate(int numberOfPods) {
+        log.info("Waiting for 2 created replica sets");
+        //Wait for 2 minutes for replica sets
+        if (!areTwoReplicaSetsAvailable(Component.SERVICE)) {
+            fail("TIMEOUT 2 minutes : Failed to load 2 UI replica sets");
+        }
+        if (!areTwoReplicaSetsAvailable(Component.GENERATOR)) {
+            fail("TIMEOUT 2 minutes : Failed to load 2 generator replica sets");
+        }
+        log.info("Waiting for exactly " + numberOfPods + " running Apicurito pod.");
+        //Wait 3 minutes for n running pods
+        if (!areExactlyNPodsRunning(numberOfPods, Component.SERVICE)) {
+            fail("TIMEOUT 3 minutes: Failed to load " + numberOfPods + " running Apicurito UI pods.");
+        }
+        if (!areExactlyNPodsRunning(numberOfPods, Component.GENERATOR)) {
+            fail("TIMEOUT 3 minutes: Failed to load " + numberOfPods + " running Apicurito generator pods.");
+        }
+    }
+
+    public static void waitForOperatorUpdate() {
+        try {
+            OpenShift ocp = ConfigurationOCPSteps.getOpenShiftService().getClient();
+            String previousCSV = ReleaseSpecificParameters.APICURITO_OLD_CSV;
+            String newCSV = ReleaseSpecificParameters.APICURITO_CURRENT_CSV;
+            Filter completeFilter = Filter.filter(Criteria.where("phase").is("Complete"));
+            Filter matchesCSVs = Filter.filter(Criteria.where("bundleLookups.identifier").eq(newCSV).and("bundleLookups.replaces").eq(previousCSV));
+            HelperFunctions.waitFor(() -> {
+                DocumentContext documentContext = JsonPath.parse(ocp.customResource(installPlanContext()).list(ocp.getNamespace()));
+                Object read = documentContext.read("$.items[*].status[?]", completeFilter);
+                Object found = JsonPath.parse(read).read("$", matchesCSVs);
+                return found != null;
+            }, 2L, 300L);
+        } catch (Exception e) {
+            log.error("Exception", e);
+            throw new RuntimeException(e);
+        }
+    }
+
+    private static CustomResourceDefinitionContext installPlanContext() {
+        return (new CustomResourceDefinitionContext.Builder()).withGroup("operators.coreos.com").withPlural("installplans").withScope("Namespaced")
+            .withVersion("v1alpha1").build();
     }
 
     public static void setTestEnvToOperator(String nameOfEnv, String valueOfEnv) {
@@ -89,24 +129,24 @@ public class ConfigurationOCPUtils {
         }
     }
 
-    private static List<ReplicaSet> getApicuritoUIreplicaSets() {
+    private static List<ReplicaSet> getApicuritoReplicaSets(Component component) {
         List<ReplicaSet> uiRs = new ArrayList<>();
 
         List<ReplicaSet> listRs = OpenShiftUtils.getInstance().apps().replicaSets().list().getItems();
         for (ReplicaSet rs : listRs) {
-            if (Component.SERVICE.getName().equals(rs.getMetadata().getOwnerReferences().get(0).getName())) {
+            if (component.getName().equals(rs.getMetadata().getOwnerReferences().get(0).getName())) {
                 uiRs.add(rs);
             }
         }
         return uiRs;
     }
 
-    private static boolean areTwoReplicaSetsAvailable() {
+    private static boolean areTwoReplicaSetsAvailable(Component component) {
         int counter = 0;
         while (counter < 12) {
             CommonUtils.sleepFor(10);
 
-            if (getApicuritoUIreplicaSets().size() == 2) {
+            if (getApicuritoReplicaSets(component).size() == 2) {
                 return true;
             }
             ++counter;
@@ -114,13 +154,13 @@ public class ConfigurationOCPUtils {
         return false;
     }
 
-    private static boolean areExactlyNUiPodsRunning(int numberOfPods) {
+    private static boolean areExactlyNPodsRunning(int numberOfPods, Component component) {
         List<ReplicaSet> uiRs = new ArrayList<>();
         int counter = 0;
 
         while (counter < 18) {
             uiRs.clear();
-            uiRs = getApicuritoUIreplicaSets();
+            uiRs = getApicuritoReplicaSets(component);
             CommonUtils.sleepFor(10);
 
             if (uiRs.get(0).getStatus().getReplicas() + uiRs.get(1).getStatus().getReplicas() == numberOfPods) {
@@ -137,7 +177,7 @@ public class ConfigurationOCPUtils {
         while (!oneReplica) {
             CommonUtils.sleepFor(5);
 
-            if (getApicuritoUIreplicaSets().size() == 1) {
+            if (getApicuritoReplicaSets(Component.SERVICE).size() == 1 && getApicuritoReplicaSets(Component.GENERATOR).size() == 1) {
                 oneReplica = true;
             }
             ++counter;
