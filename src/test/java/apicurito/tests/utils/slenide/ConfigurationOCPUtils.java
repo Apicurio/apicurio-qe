@@ -3,6 +3,12 @@ package apicurito.tests.utils.slenide;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.fail;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.dataformat.yaml.YAMLFactory;
+import io.fabric8.kubernetes.api.model.ObjectMeta;
+import io.fabric8.kubernetes.api.model.apiextensions.v1.CustomResourceDefinition;
+import io.fabric8.kubernetes.api.model.apiextensions.v1.CustomResourceDefinitionSpec;
+import io.fabric8.openshift.api.model.Route;
 import io.syndesis.qe.marketplace.util.HelperFunctions;
 
 import com.jayway.jsonpath.Criteria;
@@ -10,9 +16,14 @@ import com.jayway.jsonpath.DocumentContext;
 import com.jayway.jsonpath.Filter;
 import com.jayway.jsonpath.JsonPath;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.lang.reflect.Constructor;
+import java.nio.file.Files;
+import java.nio.file.Paths;
+import java.util.*;
 
 import apicurito.tests.configuration.Component;
 import apicurito.tests.configuration.ReleaseSpecificParameters;
@@ -24,6 +35,7 @@ import io.fabric8.kubernetes.api.model.Pod;
 import io.fabric8.kubernetes.api.model.apps.ReplicaSet;
 import io.fabric8.kubernetes.client.dsl.base.CustomResourceDefinitionContext;
 import lombok.extern.slf4j.Slf4j;
+import org.yaml.snakeyaml.Yaml;
 
 @Slf4j
 public class ConfigurationOCPUtils {
@@ -37,7 +49,7 @@ public class ConfigurationOCPUtils {
             CommonUtils.sleepFor(5);
 
             tmp = OpenShiftUtils.getInstance().apps().deployments().inNamespace(TestConfiguration.openShiftNamespace()).list().getItems().get(1)
-                .getStatus().getUnavailableReplicas();
+                    .getStatus().getUnavailableReplicas();
         }
 
         //Wait another 15 seconds because of termination running pods
@@ -84,17 +96,17 @@ public class ConfigurationOCPUtils {
 
     private static CustomResourceDefinitionContext installPlanContext() {
         return (new CustomResourceDefinitionContext.Builder()).withGroup("operators.coreos.com").withPlural("installplans").withScope("Namespaced")
-            .withVersion("v1alpha1").build();
+                .withVersion("v1alpha1").build();
     }
 
     public static void setTestEnvToOperator(String nameOfEnv, String valueOfEnv) {
         log.info("Setting test ENV: " + nameOfEnv + "=" + valueOfEnv);
         final String output = OpenShiftUtils.binary().execute(
-            "set",
-            "env",
-            "deployment",
-            "fuse-apicurito",
-            nameOfEnv + "=" + valueOfEnv
+                "set",
+                "env",
+                "deployment",
+                "fuse-apicurito",
+                nameOfEnv + "=" + valueOfEnv
         );
     }
 
@@ -102,16 +114,16 @@ public class ConfigurationOCPUtils {
         log.info("Creating " + itemName + " from: " + item);
 
         final String output = OpenShiftUtils.binary().execute(
-            "create",
-            "-n", TestConfiguration.openShiftNamespace(),
-            "-f", item
+                "create",
+                "-n", TestConfiguration.openShiftNamespace(),
+                "-f", item
         );
     }
 
     public static void applyInOCP(String itemName, String item) {
         log.info("Applying {} from: {}", itemName, item);
         final String output = OpenShiftUtils.binary().execute(
-            "apply", "-n", TestConfiguration.openShiftNamespace(), "-f", item
+                "apply", "-n", TestConfiguration.openShiftNamespace(), "-f", item
         );
     }
 
@@ -126,6 +138,54 @@ public class ConfigurationOCPUtils {
                 assertThat(labels.get("rht.prod_ver")).isEqualTo(version);
                 assertThat(labels.get("rht.comp_ver")).isEqualTo(version);
             }
+        }
+    }
+
+    /**
+     * @param component only GENERATOR or SERVICE allowed
+     */
+    public static void checkRouteHostname(Component component) {
+        Yaml yaml = new Yaml();
+        try {
+            InputStream inputStream = Files.newInputStream(Paths.get("src/test/resources/CRs/generatedCustomRouteHostnamesCR.yaml"));
+
+            LinkedHashMap<String, LinkedHashMap> yamlMap = yaml.load(inputStream);
+            LinkedHashMap<String, String> spec = yamlMap.get("spec");
+            Route route = OpenShiftUtils.getInstance().getRoute(component.getName());
+            if (component.equals(Component.GENERATOR)) {
+                assertThat(route.getSpec().getHost()).isEqualTo(spec.get("generatorRouteHostname"));
+            } else {
+                assertThat(route.getSpec().getHost()).isEqualTo(spec.get("uiRouteHostname"));
+            }
+        } catch (Exception e) {
+            log.error("Exception", e);
+            throw new RuntimeException(e);
+        }
+    }
+
+    public static void generateCRFileWithCustomRouteHostnamesBasedOnOpenshiftUrl(String serviceRouteHostname, String generatorRouteHostname) {
+        String currentOpenshiftSubstring = ".apps." + TestConfiguration.openShiftUrl().substring(12, TestConfiguration.openShiftUrl().length() - 5);
+        String newUiRouteHostname = serviceRouteHostname + currentOpenshiftSubstring;
+        String newGeneratorRouteHostname = generatorRouteHostname + currentOpenshiftSubstring;
+
+        ObjectMeta metadata = new ObjectMeta();
+        metadata.setName("apicurito-service");
+        metadata.setAnnotations(null);
+
+        CustomResourceDefinitionSpec spec = new CustomResourceDefinitionSpec();
+        spec.setVersions(null);
+        spec.setAdditionalProperty("size", 2);
+        spec.setAdditionalProperty("uiRouteHostname", newUiRouteHostname);
+        spec.setAdditionalProperty("generatorRouteHostname", newGeneratorRouteHostname);
+
+        CustomResourceDefinition cr = new CustomResourceDefinition("apicur.io/v1", "Apicurito", metadata, spec, null);
+
+        ObjectMapper om = new ObjectMapper(new YAMLFactory());
+        try {
+            om.writeValue(new File("src/test/resources/CRs/generatedCustomRouteHostnamesCR.yaml"), cr);
+        } catch (Exception e) {
+            log.error("Exception", e);
+            throw new RuntimeException(e);
         }
     }
 
