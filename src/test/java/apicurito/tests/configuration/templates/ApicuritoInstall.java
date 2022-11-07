@@ -83,9 +83,9 @@ public class ApicuritoInstall {
 
     public static void reinstallApicurito() {
         OpenShiftUtils.createPullSecret();
-        if (TestConfiguration.apicuritoInstallMethod().equals("operator")) {
+        if (TestConfiguration.apicuritoInstallMethod().equalsIgnoreCase("operator")) {
             ApicuritoOperator.reinstallApicurito();
-        } else if (TestConfiguration.apicuritoInstallMethod().equals("operatorhub")) {
+        } else if (TestConfiguration.apicuritoInstallMethod().equalsIgnoreCase("operatorhub")) {
             ApicuritoOperatorhub.reinstallApicurito();
         } else {
             ApicuritoTemplate.reinstallApicurito();
