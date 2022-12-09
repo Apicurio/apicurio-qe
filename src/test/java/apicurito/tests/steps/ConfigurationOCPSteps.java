@@ -1,12 +1,23 @@
 package apicurito.tests.steps;
 
-import static org.assertj.core.api.Assertions.assertThat;
-
+import apicurito.tests.configuration.Component;
+import apicurito.tests.configuration.ReleaseSpecificParameters;
+import apicurito.tests.configuration.TestConfiguration;
+import apicurito.tests.configuration.templates.ApicuritoInstall;
+import apicurito.tests.configuration.templates.ApicuritoOperator;
+import apicurito.tests.configuration.templates.ApicuritoOperatorhub;
+import apicurito.tests.configuration.templates.ApicuritoTemplate;
+import apicurito.tests.utils.openshift.OpenShiftUtils;
+import apicurito.tests.utils.slenide.ConfigurationOCPUtils;
+import cz.xtf.core.openshift.OpenShift;
+import io.cucumber.java.en.Then;
+import io.cucumber.java.en.When;
+import io.fabric8.kubernetes.api.model.Pod;
 import io.syndesis.qe.marketplace.openshift.OpenShiftConfiguration;
 import io.syndesis.qe.marketplace.openshift.OpenShiftService;
 import io.syndesis.qe.marketplace.openshift.OpenShiftUser;
 import io.syndesis.qe.marketplace.util.HelperFunctions;
-
+import lombok.extern.slf4j.Slf4j;
 import org.json.JSONObject;
 import org.yaml.snakeyaml.Yaml;
 
@@ -22,20 +33,7 @@ import java.util.Map;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
 
-import apicurito.tests.configuration.Component;
-import apicurito.tests.configuration.ReleaseSpecificParameters;
-import apicurito.tests.configuration.TestConfiguration;
-import apicurito.tests.configuration.templates.ApicuritoInstall;
-import apicurito.tests.configuration.templates.ApicuritoOperator;
-import apicurito.tests.configuration.templates.ApicuritoOperatorhub;
-import apicurito.tests.configuration.templates.ApicuritoTemplate;
-import apicurito.tests.utils.openshift.OpenShiftUtils;
-import apicurito.tests.utils.slenide.ConfigurationOCPUtils;
-import cz.xtf.core.openshift.OpenShift;
-import io.cucumber.java.en.Then;
-import io.cucumber.java.en.When;
-import io.fabric8.kubernetes.api.model.Pod;
-import lombok.extern.slf4j.Slf4j;
+import static org.assertj.core.api.Assertions.assertThat;
 
 @Slf4j
 public class ConfigurationOCPSteps {
@@ -49,28 +47,34 @@ public class ConfigurationOCPSteps {
         int counter = 0;
         for (Pod pod : pods) {
             if (pod.getMetadata().getName().contains(component.getName())
-                && pod.getStatus().getPhase().equals("Running")) {
+                    && pod.getStatus().getPhase().equals("Running")) {
                 ++counter;
             }
         }
         assertThat(counter).as(component.getName() + " should have %s pods but currently run %s", count, counter)
-            .isEqualTo(count);
+                .isEqualTo(count);
     }
 
     /**
-     * @param crName current || older || second
-     * current CR - CR with the current API version
-     * older CR - CR with the deprecated v1alpha1 API version
-     * second CR - CR which replaced another CR (used in @update test)
+     * @param crName current || older || second || custom route hostnames
+     *               current CR - CR with the current API version
+     *               older CR - CR with the deprecated v1alpha1 API version
+     *               second CR - CR which replaced another CR (used in @update test)
+     *               custom route hostnames - CR with defined custom route hostnames
      */
     @When("deploy {string} custom resource")
     public static void deployCustomResource(String crName) {
         log.info("Deploying " + crName + " custom resource");
         String cr;
-        if (crName.equals("older")) {
-            cr = "src/test/resources/CRs/v1alpha1CR.yaml";
-        } else {
-            cr = "src/test/resources/CRs/twoPodsCR.yaml";
+        switch (crName) {
+            case "older":
+                cr = "src/test/resources/CRs/v1alpha1CR.yaml";
+                break;
+            case "custom route hostnames":
+                cr = "src/test/resources/CRs/generatedCustomRouteHostnamesCR.yaml";
+                break;
+            default:
+                cr = "src/test/resources/CRs/twoPodsCR.yaml";
         }
         ConfigurationOCPUtils.applyInOCP("Custom Resource", cr);
 
@@ -92,7 +96,7 @@ public class ConfigurationOCPSteps {
         }
         Map<String, Object> deployment = new Yaml().load(deploymentConfig);
         Map<String, String> address = ((Map<String, String>) ((Map<String, List<Map>>) ((Map<String, Map>) deployment
-            .get("spec")).get("template").get("spec")).get("containers").get(0));
+                .get("spec")).get("template").get("spec")).get("containers").get(0));
         address.put("image", TestConfiguration.apicuritoOperatorImageUrl());
         try {
             Path tmpFile = Files.createTempFile("temporaryOperator", ".yaml");
@@ -103,23 +107,23 @@ public class ConfigurationOCPSteps {
         }
 
         ConfigurationOCPUtils.setTestEnvToOperator("RELATED_IMAGE_APICURITO_OPERATOR",
-            TestConfiguration.apicuritoOperatorImageUrl());
+                TestConfiguration.apicuritoOperatorImageUrl());
 
         if (TestConfiguration.apicuritoGeneratorImageUrl() != null) {
             ConfigurationOCPUtils.setTestEnvToOperator("RELATED_IMAGE_GENERATOR",
-                TestConfiguration.apicuritoGeneratorImageUrl());
+                    TestConfiguration.apicuritoGeneratorImageUrl());
         }
 
         if (TestConfiguration.apicuritoUiImageUrl() != null) {
             ConfigurationOCPUtils.setTestEnvToOperator("RELATED_IMAGE_APICURITO",
-                TestConfiguration.apicuritoUiImageUrl());
+                    TestConfiguration.apicuritoUiImageUrl());
         }
         ConfigurationOCPUtils.waitForPodsUpdate(1);
     }
 
     /**
      * @param podType operator || image
-     * @param value pod image
+     * @param value   pod image
      */
     @When("check that apicurito {string} is {string}")
     public void checkThatApicuritoImageIs(String podType, String value) {
@@ -148,16 +152,28 @@ public class ConfigurationOCPSteps {
     public void checkThatApicuritoOperatorIsDeployedAndInRunningState() {
         log.info("Checking that operator is deployed and in running state");
         OpenShiftUtils.xtf().waiters()
-            .areExactlyNPodsReady(1, "name", "fuse-apicurito")
-            .interval(TimeUnit.SECONDS, 2)
-            .timeout(TimeUnit.MINUTES, 3)
-            .waitFor();
+                .areExactlyNPodsReady(1, "name", "fuse-apicurito")
+                .interval(TimeUnit.SECONDS, 2)
+                .timeout(TimeUnit.MINUTES, 3)
+                .waitFor();
     }
+
 
     @When("deploy older operator from operatorhub")
     public void deployOlderOperatorHub() {
         log.info("Creating apicurito subscription");
         ApicuritoOperatorhub.deploy(ReleaseSpecificParameters.APICURITO_OLD_UPDATE_CHANNEL, "older");
+    }
+
+    @When("deploy operator with custom route hostnames from operatorhub")
+    public void deployOperatorHubWithCustomRouteHostnames() {
+        log.info("Creating apicurito subscription");
+        ApicuritoOperatorhub.deploy(ReleaseSpecificParameters.APICURITO_CURRENT_UPDATE_CHANNEL, "custom route hostnames");
+    }
+
+    @When("generate CR with {string} service and {string} generator route hostnames based on Openshift URL")
+    public void generateCRWithCustomRouteHostnamesBasedOnOpenshiftUrl(String serviceRouteHostname, String generatorRouteHostname) {
+        ConfigurationOCPUtils.generateCRFileWithCustomRouteHostnamesBasedOnOpenshiftUrl(serviceRouteHostname, generatorRouteHostname);
     }
 
     @When("upgrade operator via operatorhub")
@@ -195,6 +211,11 @@ public class ConfigurationOCPSteps {
         }
     }
 
+    @Then("^check that \"([^\"]*)\" route has correct hostname$")
+    public void checkThatRouteHasHostname(Component component) {
+        ConfigurationOCPUtils.checkRouteHostname(component);
+    }
+
     @When("delete running instance of apicurito")
     public void deleteRunningInstanceOfApicurito() {
         ApicuritoInstall.cleanNamespace();
@@ -208,7 +229,7 @@ public class ConfigurationOCPSteps {
         if (TestConfiguration.namespaceCleanupAfter()) {
             OpenShiftUtils.binary().execute("delete", "operatorgroup", "fo-operatorgroup");
             OpenShiftUtils.binary().execute("delete", "CatalogSource", "apicurito-test-catalog", "-n",
-                "openshift-marketplace");
+                    "openshift-marketplace");
         }
     }
 
@@ -229,7 +250,7 @@ public class ConfigurationOCPSteps {
 
         for (Pod p : pods) {
             if (p.getStatus().getPhase().contains("Running")
-                && p.getMetadata().getName().contains(component.getName())) {
+                    && p.getMetadata().getName().contains(component.getName())) {
                 Map<String, String> labels = p.getMetadata().getLabels();
                 assertThat(labels).containsKey("com.company");
                 assertThat(labels).containsKey("rht.prod_name");
@@ -265,7 +286,7 @@ public class ConfigurationOCPSteps {
         ConfigurationOCPUtils.createInOCP("Service", TestConfiguration.apicuritoOperatorServiceUrl());
         ConfigurationOCPUtils.createInOCP("Cluster Role", TestConfiguration.apicuritoOperatorClusterRoleUrl());
         ConfigurationOCPUtils.createInOCP("Cluster Role binding",
-            TestConfiguration.apicuritoOperatorClusterRoleBindingUrl());
+                TestConfiguration.apicuritoOperatorClusterRoleBindingUrl());
         ConfigurationOCPUtils.createInOCP("Role", TestConfiguration.apicuritoOperatorRoleUrl());
         ConfigurationOCPUtils.createInOCP("Role binding", TestConfiguration.apicuritoOperatorRoleBindingUrl());
 
@@ -275,24 +296,24 @@ public class ConfigurationOCPSteps {
         OpenShiftUtils.addImagePullSecretToServiceAccount("apicurito", "apicurito-pull-secret");
 
         OpenShiftUtils.getInstance().apps().deployments()
-            .create(ApicuritoOperator.getUpdatedOperatorDeployment(ReleaseSpecificParameters.OLD_OPERATOR_URL));
+                .create(ApicuritoOperator.getUpdatedOperatorDeployment(ReleaseSpecificParameters.OLD_OPERATOR_URL));
 
         ConfigurationOCPUtils.setTestEnvToOperator("RELATED_IMAGE_APICURITO_OPERATOR",
-            ReleaseSpecificParameters.OLD_OPERATOR_URL);
+                ReleaseSpecificParameters.OLD_OPERATOR_URL);
 
         ConfigurationOCPUtils.applyInOCP("Custom Resource",
-            "https://gist.githubusercontent.com/mmajerni/7365800673a3014d6da8773650377d6c/raw/42811ef45986795a8fa3466ad384c9e172057e70/cr_1_pod" +
-                ".yaml");
+                "https://gist.githubusercontent.com/mmajerni/7365800673a3014d6da8773650377d6c/raw/42811ef45986795a8fa3466ad384c9e172057e70/cr_1_pod" +
+                        ".yaml");
 
         ConfigurationOCPUtils.waitForOneReplicaSet();
     }
 
     public static OpenShiftService getOpenShiftService() {
         OpenShiftUser adminUser = new OpenShiftUser(TestConfiguration.openshiftUsername(),
-            TestConfiguration.openshiftPassword(), TestConfiguration.openShiftUrl());
+                TestConfiguration.openshiftPassword(), TestConfiguration.openShiftUrl());
         OpenShiftConfiguration openShiftConfiguration = OpenShiftConfiguration.builder()
-            .namespace(TestConfiguration.openShiftNamespace()).build();
+                .namespace(TestConfiguration.openShiftNamespace()).build();
         return new OpenShiftService(openShiftConfiguration,
-            adminUser, null);
+                adminUser, null);
     }
 }

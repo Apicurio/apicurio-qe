@@ -10,6 +10,9 @@ import static com.codeborne.selenide.Condition.visible;
 import static com.codeborne.selenide.Selenide.$;
 import static com.codeborne.selenide.Selenide.$$;
 
+import apicurito.tests.configuration.Component;
+import apicurito.tests.utils.openshift.OpenShiftUtils;
+import io.fabric8.openshift.api.model.Route;
 import org.apache.commons.io.FileUtils;
 import org.assertj.core.api.Condition;
 import org.openqa.selenium.By;
@@ -44,15 +47,21 @@ public class CommonSteps {
         Selenide.open(TestConfiguration.apicuritoUrl());
     }
 
+    @Given("^log into apicurito using custom UI route hostname$")
+    public void loginUsingCustomRoute() {
+        String uiRouteHostname = OpenShiftUtils.getInstance().getRoute(Component.SERVICE.getName()).getSpec().getHost();
+        Selenide.open("https://" + uiRouteHostname);
+    }
+
     @When("^create a new API version \"([^\"]*)\"$")
     public void createANewApi(String version) {
         if ("3".equals(version)) {
             CommonUtils.getButtonWithText("New API", CommonUtils.getAppRoot()).shouldBe(visible, enabled).shouldNotHave(attribute("disabled"))
-                .click();
+                    .click();
         } else {
 
             CommonUtils.getButtonWithText("Toggle Dropdown", CommonUtils.getAppRoot()).shouldBe(visible, enabled).shouldNotHave(attribute("disabled"))
-                .click();
+                    .click();
 
             CommonUtils.getAppRoot().$$("a").filter(text("New (OpenAPI 2)")).first().click();
         }
@@ -72,9 +81,9 @@ public class CommonSteps {
     public void generateAndExportFuseCamelProject() {
         File exportedFuseCamelProject = ImportExportUtils.exportFuseCamelProject();
         assertThat(exportedFuseCamelProject)
-            .exists()
-            .isFile()
-            .has(new Condition<>(f -> f.length() > 0, "File size should be greater than 0"));
+                .exists()
+                .isFile()
+                .has(new Condition<>(f -> f.length() > 0, "File size should be greater than 0"));
     }
 
     @And("^unzip and run generated fuse camel project$")
@@ -90,14 +99,14 @@ public class CommonSteps {
     public void saveAPIAsAndCloseEditor(String format) {
         File exportedIntegrationFile = ImportExportUtils.exportAPIUtil(format);
         assertThat(exportedIntegrationFile)
-            .exists()
-            .isFile()
-            .has(new Condition<>(f -> f.length() > 0, "File size should be greater than 0"));
+                .exists()
+                .isFile()
+                .has(new Condition<>(f -> f.length() > 0, "File size should be greater than 0"));
 
         CommonUtils.getButtonWithText("Close", CommonUtils.getAppRoot())
-            .click();
+                .click();
         CommonUtils.getButtonWithText("Don't Save", CommonUtils.getAppRoot())
-            .click();
+                .click();
     }
 
     @Then("^delete file \"([^\"]*)\"$")
@@ -143,7 +152,7 @@ public class CommonSteps {
 
         if (Boolean.valueOf(isPlus)) {
             pageElement.$(section).$$("icon-button").filter(attribute("type", "add"))
-                .shouldHaveSize(1).first().shouldBe(visible).$("button").click();
+                    .shouldHaveSize(1).first().shouldBe(visible).$("button").click();
         } else {
             pageElement.$(section).$$("a").filter(text(aName)).shouldHaveSize(1).first().shouldBe(visible).click();
         }
@@ -178,7 +187,7 @@ public class CommonSteps {
             //open editor by plus button(true) or by link (false)
             if (Boolean.valueOf(dataRow.get(2))) {
                 pageElement.$(section).$$("icon-button").filter(attribute("type", "add"))
-                    .shouldHaveSize(1).first().shouldBe(visible).$("button").click();
+                        .shouldHaveSize(1).first().shouldBe(visible).$("button").click();
             } else {
                 pageElement.$(section).$$("a").filter(text("Add a server")).shouldHaveSize(1).first().shouldBe(visible).click();
             }
