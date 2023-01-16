@@ -1,14 +1,22 @@
 package apicurito.tests.steps.verification;
 
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.assertj.core.api.Assertions.fail;
-
-import static com.codeborne.selenide.Condition.text;
-
-import org.openqa.selenium.By;
+import apicurito.tests.utils.HttpUtils;
+import apicurito.tests.utils.slenide.CommonUtils;
+import apicurito.tests.utils.slenide.OperationUtils;
+import apicurito.tests.utils.slenide.PathUtils;
 
 import com.codeborne.selenide.ElementsCollection;
 import com.codeborne.selenide.SelenideElement;
+
+import cz.xtf.core.http.Https;
+import io.cucumber.datatable.DataTable;
+import io.cucumber.java.en.And;
+import io.cucumber.java.en.Then;
+import lombok.extern.slf4j.Slf4j;
+
+import org.junit.Assert;
+
+import org.openqa.selenium.By;
 
 import java.io.File;
 import java.net.MalformedURLException;
@@ -16,18 +24,10 @@ import java.net.URL;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.List;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
 
-import apicurito.tests.utils.HttpUtils;
-import apicurito.tests.utils.slenide.CommonUtils;
-import apicurito.tests.utils.slenide.OperationUtils;
-import apicurito.tests.utils.slenide.PathUtils;
-import cz.xtf.core.http.Https;
-import io.cucumber.datatable.DataTable;
-import io.cucumber.java.en.And;
-import io.cucumber.java.en.Then;
-import lombok.extern.slf4j.Slf4j;
+import static com.codeborne.selenide.Condition.text;
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.fail;
 
 @Slf4j
 
@@ -47,7 +47,8 @@ public class CommonVerifications {
      */
     @Then("check that exist {string} on {string} page")
     public void checkThatExistOnPage(String param, String page, DataTable table) {
-        SelenideElement pageElement = page.equals("operations") ? OperationUtils.getOperationRoot() : PathUtils.getPathPageRoot();
+        SelenideElement pageElement =
+            page.equals("operations") ? OperationUtils.getOperationRoot() : PathUtils.getPathPageRoot();
         String rowType = null;
         By section = CommonUtils.getSectionBy(param);
 
@@ -87,37 +88,45 @@ public class CommonVerifications {
             }
 
             String dropDownValue = page.$(section).$(buttonId).getText();
-            assertThat(dropDownValue).as("%s is %s but should be %s", dataRow.get(0), dropDownValue, dataRow.get(1)).isEqualTo(dataRow.get(1));
+            assertThat(dropDownValue).as("%s is %s but should be %s", dataRow.get(0), dropDownValue, dataRow.get(1))
+                .isEqualTo(dataRow.get(1));
         }
     }
 
     @Then("^check that API \"([^\"]*)\" value \"([^\"]*)\" on page \"([^\"]*)\"$")
     public void checkThatConsumesProducesHasValueOnPage(String consumesProduces, String value, String page) {
         SelenideElement subsection = CommonUtils.getPageElement(page).$(By.className(consumesProduces));
-        assertThat(subsection.getText()).as("%s should be %s but is %s", consumesProduces, value, subsection.getText()).contains(value);
+        assertThat(subsection.getText()).as("%s should be %s but is %s", consumesProduces, value, subsection.getText())
+            .contains(value);
     }
 
     @Then("check that {string} created {string} on {string} page with name {string}")
     public void checkThatCreatedOnPageWithName(String isCreated, String param, String page, String elementName) {
         By sectionBy = CommonUtils.getSectionBy(param);
-        SelenideElement elementRow = CommonUtils.getElementRow(CommonUtils.getPageElement(page).$(sectionBy), param, elementName);
+        SelenideElement elementRow = CommonUtils.getElementRow(CommonUtils.getPageElement(page)
+            .$(sectionBy), param, elementName);
         if ("is".equals(isCreated)) {
-            assertThat(elementRow).as("Object %s with name %s on %s page is not created and should be", param, elementName, page).isNotNull();
+            assertThat(elementRow).as("Object %s with name %s on %s page is not created and should be", param, elementName, page)
+                .isNotNull();
         } else {
-            assertThat(elementRow).as("Object %s with name %s on %s page is created and should not be", param, elementName, page).isNull();
+            assertThat(elementRow).as("Object %s with name %s on %s page is created and should not be", param, elementName, page)
+                .isNull();
         }
     }
 
     @Then("check that {string} overridden {string} on {string} page with name {string}")
     public void checkThatOverrideOnPageWithName(String isOverridden, String param, String page, String elementName) {
         By sectionBy = CommonUtils.getSectionBy(param);
-        SelenideElement elementRow = CommonUtils.getElementRow(CommonUtils.getPageElement(page).$(sectionBy), param, elementName);
+        SelenideElement elementRow = CommonUtils.getElementRow(CommonUtils.getPageElement(page)
+            .$(sectionBy), param, elementName);
         if ("is".equals(isOverridden)) {
-            assertThat(elementRow.$$("button").filter(text("Override")))
-                .as("Object %s with name %s on %s page is not created and should be", param, elementName, page).isNull();
+            assertThat(elementRow.$$("button")
+                .filter(text("Override"))).as("Object %s with name %s on %s page is not created and should be", param, elementName, page)
+                .isNull();
         } else {
-            assertThat(elementRow.$$("button").filter(text("Override")))
-                .as("Object %s with name %s on %s page is created and should not be", param, elementName, page).isNotNull();
+            assertThat(elementRow.$$("button")
+                .filter(text("Override"))).as("Object %s with name %s on %s page is created and should not be", param, elementName, page)
+                .isNotNull();
         }
     }
 
@@ -142,24 +151,29 @@ public class CommonVerifications {
 
                 if (!dataRow.get(2).isEmpty()) {
                     String isRequired = row.$(By.className("param-required")).$("drop-down").getText();
-                    assertThat(isRequired)
-                        .as("%s should be %s but is %s", message, dataRow.get(2), isRequired)
+                    assertThat(isRequired).as("%s should be %s but is %s", message, dataRow.get(2), isRequired)
                         .isEqualTo(dataRow.get(2));
                 }
 
                 if (!dataRow.get(3).isEmpty()) {
-                    String type = row.$(Elements.PARAMETERS_TYPE).$(CommonUtils.DropdownButtons.PROPERTY_TYPE.getButtonId()).getText();
-                    assertThat(type).as("%s type is %s but should be %s", message, type, dataRow.get(3)).isEqualTo(dataRow.get(3));
+                    String type = row.$(Elements.PARAMETERS_TYPE)
+                        .$(CommonUtils.DropdownButtons.PROPERTY_TYPE.getButtonId()).getText();
+                    assertThat(type).as("%s type is %s but should be %s", message, type, dataRow.get(3))
+                        .isEqualTo(dataRow.get(3));
                 }
 
                 if (!dataRow.get(4).isEmpty()) {
-                    String of = row.$(Elements.PARAMETERS_TYPE).$(CommonUtils.DropdownButtons.PROPERTY_TYPE_OF.getButtonId()).getText();
-                    assertThat(of).as("%s type of is %s but should be %s", message, of, dataRow.get(4)).isEqualTo(dataRow.get(4));
+                    String of = row.$(Elements.PARAMETERS_TYPE)
+                        .$(CommonUtils.DropdownButtons.PROPERTY_TYPE_OF.getButtonId()).getText();
+                    assertThat(of).as("%s type of is %s but should be %s", message, of, dataRow.get(4))
+                        .isEqualTo(dataRow.get(4));
                 }
 
                 if (!dataRow.get(5).isEmpty()) {
-                    String as = row.$(Elements.PARAMETERS_TYPE).$(CommonUtils.DropdownButtons.PROPERTY_TYPE_AS.getButtonId()).getText();
-                    assertThat(as).as("%s type as is %s but should be %s", message, as, dataRow.get(5)).isEqualTo(dataRow.get(5));
+                    String as = row.$(Elements.PARAMETERS_TYPE)
+                        .$(CommonUtils.DropdownButtons.PROPERTY_TYPE_AS.getButtonId()).getText();
+                    assertThat(as).as("%s type as is %s but should be %s", message, as, dataRow.get(5))
+                        .isEqualTo(dataRow.get(5));
                 }
             }
         } else {
@@ -201,19 +215,17 @@ public class CommonVerifications {
         final Path destination = sourceFolder.resolve("camel-project");
 
         // Create a new thread and run the generated camel project with maven commands
-        final Process[] p = new Process[1];
-        final ExecutorService executorService = Executors.newSingleThreadExecutor();
-        executorService.submit(() -> {
-            ProcessBuilder pb = new ProcessBuilder("../../.././mvnw", "clean", "package");
-            pb.command("../../.././mvnw", "spring-boot:run");
-            pb.directory(new File(String.valueOf(destination)));
-            try {
-                p[0] = pb.start();
-                p[0].waitFor();
-            } catch (Exception e) {
-                log.debug("Exception", e);
-            }
-        });
+        Process p = null;
+        ProcessBuilder pb = new ProcessBuilder("../../.././mvnw", "spring-boot:run");
+        pb.directory(new File(String.valueOf(destination)));
+        File springbootLog = new File("sprinboot.log");
+        log.info(springbootLog.getAbsolutePath());
+        pb.redirectOutput(springbootLog);
+        try {
+            p = pb.start();
+        } catch (Exception e) {
+            Assert.fail("Could not start the application.");
+        }
 
         // Open the web browser to verify the returned code is 200 OK and the generated camel project is correct
         final String testUrl = "http://localhost:8080/openapi.json";
@@ -227,7 +239,6 @@ public class CommonVerifications {
         }
 
         // Shutdown the thread
-        p[0].destroy();
-        executorService.shutdown();
+        p.destroy();
     }
 }
